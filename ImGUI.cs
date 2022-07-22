@@ -68,6 +68,10 @@ namespace ImGUI
 				return "cimgui.dll";
 			throw new NotImplementedException();
 		}
+		// Redraw the mouse so that it is on top of ImGui
+		Main.spriteBatch.Begin();
+		Main.DrawCursor(Main.DrawThickCursor());
+		Main.spriteBatch.End();
 
 		private void ConfigureNative()
 		{
