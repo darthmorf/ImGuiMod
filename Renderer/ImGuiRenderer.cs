@@ -5,9 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ImGuiNET;
-using Renderer;
 
-namespace ImGUI
+namespace ImGUI.Renderer
 {
 	/// <summary>
 	/// ImGui renderer for use with XNA-likes (FNA & MonoGame)
