@@ -38,6 +38,7 @@ public class ImGUI : Mod
 
 			LoadContent();
 			On.Terraria.Main.DoDraw += Main_DoDraw;
+			log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
 		});
 
 	}
@@ -45,9 +46,6 @@ public class ImGUI : Mod
 	private void Main_DoDraw(On.Terraria.Main.orig_DoDraw orig, Main self, GameTime gameTime)
 	{
 		orig(self, gameTime);
-
-		if (Main.gameMenu)
-			return;
 
 		renderer.BeforeLayout(gameTime);
 
@@ -70,14 +68,16 @@ public class ImGUI : Mod
 
 	private void ImGuiLayout()
 	{
-		var npcs = Main.npc.SkipLast(1).Count(n=>n.active);
-		var projs = Main.projectile.SkipLast(1).Count(n => n.active);
-		if(Config.DebugWindow)
+		if(Config.DebugWindow && ImGui.Begin("Debug"))
 		{
 			ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
 			ImGuiLoader.DebugGUI();
+			ImGui.End();
 		}
-		//ImGui.ShowDemoWindow();
+		// draw default window
+		WindowInfo.GUI();
+		// draw custom windows
+		ImGuiLoader.CustomGUI();
 	}
 
 	public static string ImGuiPath => Path.Combine(Main.SavePath, "ImGui");

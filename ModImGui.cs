@@ -1,7 +1,15 @@
-﻿using Terraria.ModLoader;
+﻿//using Terraria.ModLoader;
+
+using Terraria;
+using Terraria.ModLoader;
 
 namespace ImGUI;
 
+public struct ImTabInfo
+{
+	string name;
+
+}
 
 public abstract class ModImGui : ModType, IIndexed
 {
@@ -14,6 +22,8 @@ public abstract class ModImGui : ModType, IIndexed
 
 	}
 
+	private ImTabInfo? TabInfo;
+
 	protected sealed override void Register()
 	{
 		ModTypeLookup<ModImGui>.Register(this);
@@ -24,23 +34,33 @@ public abstract class ModImGui : ModType, IIndexed
 
 	public sealed override void SetupContent()
 	{
-
+		SetStaticDefaults();
 	}
 
 	public sealed override void Unload()
 	{
-		
+
 	}
 
+	/// <summary>
+	/// Use ImGui.** statements that you want to render in the Debug window.
+	/// </summary>
 	public virtual void DebugGUI()
 	{
+
 	}
 
-	public virtual void TabGUI()
+	/// <summary>
+	/// Render a tab for your mod in the main ImGUI window, must set TabInfo in SetStaticDefaults.
+	/// </summary>
+	private void TabGUI()
 	{
 
 	}
 
+	/// <summary>
+	/// Create own separate windows.Don't leave ImGui.** instructions on the air, make sure to create a window
+	/// </summary>
 	public virtual void CustomGUI()
 	{
 

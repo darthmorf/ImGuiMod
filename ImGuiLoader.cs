@@ -20,6 +20,18 @@ internal class ImGuiLoader
 		}
 	}
 
+
+	private static HookList HookCustomGUI = AddHook<Action>(p => p.CustomGUI);
+
+	public static void CustomGUI()
+	{
+		foreach (var gui in HookCustomGUI.Enumerate(guis))
+		{
+			gui.CustomGUI();
+			
+		}
+	}
+
 	internal static void UpdateHooks()
 	{
 		foreach (var hook in hooks)
