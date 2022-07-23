@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ImGUI;
@@ -39,8 +40,8 @@ public class ImGUI : Mod
 			renderer.RebuildFontAtlas();
 
 			LoadContent();
-			On.Terraria.Main.DoDraw += Main_DoDraw;
 			log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
+			On.Terraria.Main.DoDraw += Main_DoDraw;
 		});
 
 	}
@@ -68,18 +69,46 @@ public class ImGUI : Mod
 		ImGuiLoader.UpdateHooks();
 	}
 
+	const bool use_work_area = true;
+
 	private void ImGuiLayout()
 	{
-		if(Config.DebugWindow && ImGui.Begin("Debug"))
+		DockSpace();
+
+		if (Config.DebugWindow && ImGui.Begin("Debug"))
 		{
 			ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
 			ImGuiLoader.DebugGUI();
 			ImGui.End();
 		}
+
 		// draw default window
 		WindowInfo.GUI();
 		// draw custom windows
 		ImGuiLoader.CustomGUI();
+	}
+
+	private static void DockSpace()
+	{
+		var viewport = ImGui.GetMainViewport();
+		var dockspace_flags = ImGuiDockNodeFlags.PassthruCentralNode | ImGuiDockNodeFlags.NoDockingInCentralNode;
+		var window_flags = ImGuiWindowFlags.NoDocking;
+		ImGui.SetNextWindowPos(use_work_area ? viewport.WorkPos : viewport.Pos);
+		ImGui.SetNextWindowSize(use_work_area ? viewport.WorkSize : viewport.Size);
+		ImGui.SetNextWindowViewport(viewport.ID);
+		window_flags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove;
+		window_flags |= ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
+		window_flags |= ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration;
+
+		ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
+		ImGui.Begin("DockSpace Main", window_flags);
+
+		var dockspace_id = ImGui.GetID("MainDockSpace");
+		ImGui.DockSpace(dockspace_id, System.Numerics.Vector2.Zero, dockspace_flags);
+
+
+
+		ImGui.End();
 	}
 
 	public static string ImGuiPath => Path.Combine(Main.SavePath, "ImGui");
@@ -111,7 +140,6 @@ public class ImGUI : Mod
 			}
 			NativeLib =  NativeLibrary.Load(CimguiPath);
 			return NativeLib;
-			//return NativeLibrary.Load(CimguiPath);
 		}
 
 		return IntPtr.Zero;
@@ -127,6 +155,8 @@ public class ImGUI : Mod
 
 		// Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls
 		_imGuiTexture = renderer.BindTexture(_xnaTexture);
+
+		ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 	}
 
 	public static Texture2D CreateTexture(GraphicsDevice device, int width, int height, Func<int, Color> paint)
@@ -153,6 +183,7 @@ public class ImGUI : Mod
 		DebugKey = null;
 		WindowInfoKey = null;
 		On.Terraria.Main.DoDraw -= Main_DoDraw;
+		
 		renderer.UnbindTexture(_imGuiTexture);
 		NativeLibrary.Free(NativeLib);
 	}
