@@ -24,6 +24,8 @@ public class ImGUI : Mod
 
 	public static ImGUIConfig Config = ModContent.GetInstance<ImGUIConfig>();
 
+	private static IntPtr NativeLib;
+
 	public override void Load()
 	{
 		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
@@ -103,7 +105,13 @@ public class ImGUI : Mod
 	{
 		if (libraryName == "cimgui")
 		{
-			return NativeLibrary.Load(CimguiPath);
+			if(NativeLib != IntPtr.Zero)
+			{
+				return NativeLib;
+			}
+			NativeLib =  NativeLibrary.Load(CimguiPath);
+			return NativeLib;
+			//return NativeLibrary.Load(CimguiPath);
 		}
 
 		return IntPtr.Zero;
@@ -146,5 +154,6 @@ public class ImGUI : Mod
 		WindowInfoKey = null;
 		On.Terraria.Main.DoDraw -= Main_DoDraw;
 		renderer.UnbindTexture(_imGuiTexture);
+		NativeLibrary.Free(NativeLib);
 	}
 }
