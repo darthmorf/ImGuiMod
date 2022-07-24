@@ -16,4 +16,14 @@ public class ImGUIConfig : ModConfig
 	[DefaultValue(false)]
 	[Tooltip("Show info window")]
 	public bool InfoWindow;
+
+	[Label("Window Style")]
+	[DefaultValue(ImGuiStyle.Dark)]
+	[Tooltip("Color Style of imgui gui")]
+	public ImGuiStyle Style;
+
+	public override void OnChanged()
+	{
+		ImGUI.UpdateStyle(Style);
+	}
 }

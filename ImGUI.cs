@@ -5,17 +5,16 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ImGUI;
 
 public class ImGUI : Mod
 {
+	private static bool _imguiloaded;
 	public static ImGuiRenderer renderer;
 	private Texture2D _xnaTexture;
 	private IntPtr _imGuiTexture;
@@ -23,12 +22,13 @@ public class ImGUI : Mod
 	public static ModKeybind DebugKey;
 	public static ModKeybind WindowInfoKey;
 
-	public static ImGUIConfig Config = ModContent.GetInstance<ImGUIConfig>();
+	public static ImGUIConfig Config;
 
 	private static IntPtr NativeLib;
 
 	public override void Load()
 	{
+		Config = ModContent.GetInstance<ImGUIConfig>();
 		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
 		WindowInfoKey = KeybindLoader.RegisterKeybind(this, "General Info Window", Keys.F5);
 
@@ -42,6 +42,7 @@ public class ImGUI : Mod
 			LoadContent();
 			log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
 			On.Terraria.Main.DoDraw += Main_DoDraw;
+			UpdateStyle(Config.Style);
 		});
 
 	}
@@ -157,6 +158,7 @@ public class ImGUI : Mod
 		_imGuiTexture = renderer.BindTexture(_xnaTexture);
 
 		ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+		_imguiloaded = true;
 	}
 
 	public static Texture2D CreateTexture(GraphicsDevice device, int width, int height, Func<int, Color> paint)
@@ -180,11 +182,30 @@ public class ImGUI : Mod
 
 	public override void Unload()
 	{
+		_imguiloaded = false;
 		DebugKey = null;
 		WindowInfoKey = null;
 		On.Terraria.Main.DoDraw -= Main_DoDraw;
-		
+		Config = null;
+
 		renderer.UnbindTexture(_imGuiTexture);
 		NativeLibrary.Free(NativeLib);
+	}
+
+	internal static void UpdateStyle(ImGuiStyle style)
+	{
+		if (!_imguiloaded) return;
+		switch (style)
+		{
+			case ImGuiStyle.Classic:
+				ImGui.StyleColorsClassic();
+				break;
+			case ImGuiStyle.Dark:
+				ImGui.StyleColorsDark();
+				break;
+			case ImGuiStyle.Light:
+				ImGui.StyleColorsLight();
+				break;
+		}
 	}
 }

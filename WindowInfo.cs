@@ -33,7 +33,14 @@ internal class WindowInfo
 			ImGui.EndMenuBar();
 		}
 
+		ShowWindowInfo();
+
 		ImGui.End();
+	}
+
+	private static void ShowWindowInfo()
+	{
+
 	}
 
 	private static void ShowAppLog()
