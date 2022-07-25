@@ -1,14 +1,9 @@
-﻿//using Terraria.ModLoader;
-
+﻿using ImGuiNET;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace ImGUI;
 
-public struct ImTabInfo
-{
-	string name;
-
-}
 
 public abstract class ModImGui : ModType, IIndexed
 {
@@ -20,8 +15,6 @@ public abstract class ModImGui : ModType, IIndexed
 	{
 
 	}
-
-	private ImTabInfo? TabInfo;
 
 	protected sealed override void Register()
 	{
@@ -50,17 +43,17 @@ public abstract class ModImGui : ModType, IIndexed
 	}
 
 	/// <summary>
-	/// Render a tab for your mod in the main ImGUI window, must set TabInfo in SetStaticDefaults.
+	/// Create own separate windows.Don't leave ImGui.** instructions on the air, make sure to create a window.
 	/// </summary>
-	private void TabGUI()
+	public virtual void CustomGUI()
 	{
 
 	}
 
 	/// <summary>
-	/// Create own separate windows.Don't leave ImGui.** instructions on the air, make sure to create a window
+	/// Use it to draw things behind all ImGUI windows but above terraria, useful for primitives like hitboxes.
 	/// </summary>
-	public virtual void CustomGUI()
+	public virtual void BackgroundDraw(ImDrawListPtr drawList)
 	{
 
 	}

@@ -102,29 +102,6 @@ internal class ImGuiUtils
 		ImGui.End();
 	}
 
-	private static TextureData[] textures;
-
-	internal static TextureData GetOrBindTextureData(int type,
-												  Asset<Texture2D>[] source)
-	{
-		if(textures == null)
-		{
-			textures = new TextureData[source.Length];
-		}
-		if (textures[type].ptr == IntPtr.Zero)
-		{
-			var texture = source[type].Value;
-			textures[type] = new TextureData
-			{
-				ptr = ImGUI.renderer.BindTexture(texture),
-				size = texture.Size(),
-				frames = Main.npcFrameCount[type]
-			};
-		}
-
-		return textures[type];
-	}
-
 	internal static void VectorWrapped(string v, Microsoft.Xna.Framework.Vector2 position, bool Length = false)
 	{
 		ImGui.TextWrapped($"{v}: ");

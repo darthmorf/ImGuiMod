@@ -1,4 +1,5 @@
-﻿using ImGUI.Utils;
+﻿using ImGUI.Renderer;
+using ImGUI.Utils;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,13 @@ internal class WindowInfo
 	static int activesoverlaycorner = -1;
 	private static int selected_npc_explorer = -1;
 	private static bool show_app_log;
-	private static int texture_frame = 1;
-	private static bool animate_texture;
+	private static int npc_texture_frame = 1;
+	private static bool animate_npc_texture;
 	private static int frame_timer;
+	private static bool show_app_proj_explorer;
+	private static int selected_proj_explorer;
+	private static bool animate_proj_texture;
+	private static int proj_texture_frame = 1;
 
 	internal static void GUI()
 	{
@@ -32,6 +37,8 @@ internal class WindowInfo
 			ShowAppActivesOverlay();
 		if (show_app_npc_explorer)
 			ShowAppNPCExplorer();
+		if (show_app_proj_explorer)
+			ShowAppProjExplorer();
 
 		if (!ImGUI.Config.InfoWindow) return;
 
@@ -54,6 +61,74 @@ internal class WindowInfo
 		ShowWindowInfo();
 
 		ImGui.End();
+	}
+
+	private static void ShowAppProjExplorer()
+	{
+		SimpleLayout(ref show_app_proj_explorer, ref Main.projectile, "Projectile", ref selected_proj_explorer,
+		n => n.active,
+		n => n.Name,
+		n =>
+		{
+			if (ImGui.BeginTabItem("AI"))
+			{
+				ImGui.TextWrapped("aiStyle: ");
+				ImGui.SameLine();
+				ImGui.TextWrapped(n.aiStyle.ToString());
+
+				ImGui.TextWrapped("ai: ");
+				ImGui.Indent();
+
+				for (int i = 0; i < n.ai.Length; i++)
+				{
+					ImGui.TextWrapped($"ai[{i}]: ");
+					ImGui.SameLine();
+					ImGui.TextWrapped(n.ai[i].ToString());
+				}
+
+				ImGui.Unindent();
+
+				ImGui.EndTabItem();
+			}
+			if (ImGui.BeginTabItem("Texture"))
+			{
+				var texture = TextureBinder.proj[n.type];
+
+				ImGui.Image(texture.ptr, texture.Transform(100), texture.Uv0(proj_texture_frame), texture.Uv1(proj_texture_frame));
+				ImGui.Separator();
+				ImGui.SliderInt("Frame", ref proj_texture_frame, 1, texture.frames);
+				ImGui.Checkbox("Animate", ref animate_proj_texture);
+				if (animate_proj_texture)
+				{
+					frame_timer++;
+					if (frame_timer > 5)
+					{
+						frame_timer = 0;
+						proj_texture_frame++;
+						if (proj_texture_frame > texture.frames)
+						{
+							proj_texture_frame = 1;
+						}
+					}
+				}
+
+
+
+				ImGui.EndTabItem();
+			}
+		},
+		n =>
+		{
+			if (ImGui.Button("Teleport to"))
+			{
+				Main.player[Main.myPlayer].position = n.Center - new Microsoft.Xna.Framework.Vector2(0, Main.player[Main.myPlayer].Size.Y);
+			}
+			ImGui.SameLine();
+			if (ImGui.Button("Disable"))
+			{
+				n.active = false;
+			}
+		});
 	}
 
 	private static void ShowAppNPCExplorer()
@@ -129,30 +204,33 @@ internal class WindowInfo
 			}
 			if(ImGui.BeginTabItem("Texture"))
 			{
-				var texture = GetOrBindTextureData(n.type, TextureAssets.Npc);
-				ImGui.Image(texture.ptr, texture.Transform(100), texture.Uv0(texture_frame), texture.Uv1(texture_frame));
+				var texture = TextureBinder.npcs[n.type];
+
+				ImGui.Image(texture.ptr, texture.Transform(100), texture.Uv0(npc_texture_frame), texture.Uv1(npc_texture_frame));
 				ImGui.Separator();
-				ImGui.SliderInt("Frame", ref texture_frame, 1, texture.frames);
-				ImGui.Checkbox("Animate", ref animate_texture);
-				if (animate_texture)
+				ImGui.SliderInt("Frame", ref npc_texture_frame, 1, texture.frames);
+				ImGui.Checkbox("Animate", ref animate_npc_texture);
+				if (animate_npc_texture)
 				{
 					frame_timer++;
 					if(frame_timer > 5)
 					{
 						frame_timer = 0;
-						texture_frame++;
-						if(texture_frame > texture.frames)
+						npc_texture_frame++;
+						if(npc_texture_frame > texture.frames)
 						{
-							texture_frame = 1;
+							npc_texture_frame = 1;
 						}
 					}
 				}
 
-
-
 				ImGui.EndTabItem();
 			}
 			ImGui.EndTabBar();
+			var dr = ImGui.GetBackgroundDrawList();
+			var init = n.position - Main.screenPosition;
+			var end = (n.position + n.Size) - Main.screenPosition;
+			dr.AddRect(new Vector2(init.X, init.Y), new Vector2(end.X, end.Y), 0xffffffff);
 		},
 		n=>
 		{
@@ -252,6 +330,7 @@ internal class WindowInfo
 		if (ImGui.BeginMenu("Tools"))
 		{
 			ImGui.MenuItem("NPC Explorer", null, ref show_app_npc_explorer);
+			ImGui.MenuItem("Projectile Explorer", null, ref show_app_proj_explorer);
 			ImGui.EndMenu();
 		}
 	}

@@ -57,12 +57,7 @@ public class ImGUI : Mod
 		ImGuiLayout();
 
 		// Call AfterLayout now to finish up and draw all the things
-		renderer.AfterLayout();
-
-		// Redraw the mouse so that it is on top of ImGui
-		Main.spriteBatch.Begin();
-		Main.DrawCursor(Main.DrawThickCursor());
-		Main.spriteBatch.End();
+		renderer.AfterLayout();	
 	}
 
 	public override void PostSetupContent()
@@ -87,6 +82,8 @@ public class ImGUI : Mod
 		WindowInfo.GUI();
 		// draw custom windows
 		ImGuiLoader.CustomGUI();
+
+		Main.instance.IsMouseVisible = ImGui.IsAnyItemHovered()	|| ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow);
 	}
 
 	private static void DockSpace()
