@@ -12,11 +12,6 @@ public class ImGUIConfig : ModConfig
 	[Tooltip("Show debug window")]
 	public bool DebugWindow;
 
-	[Label("Info Window")]
-	[DefaultValue(false)]
-	[Tooltip("Show info window")]
-	public bool InfoWindow;
-
 	[Label("Window Style")]
 	[DefaultValue(ImGuiStyle.Dark)]
 	[Tooltip("Color Style of imgui gui")]

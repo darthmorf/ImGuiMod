@@ -10,11 +10,6 @@ public abstract class ModImGui : ModType
 
 	public static ushort NextIndex;
 
-	public sealed override void Load()
-	{
-
-	}
-
 	protected sealed override void Register()
 	{
 		ModTypeLookup<ModImGui>.Register(this);
@@ -28,11 +23,6 @@ public abstract class ModImGui : ModType
 		SetStaticDefaults();
 	}
 
-	public sealed override void Unload()
-	{
-
-	}
-
 	/// <summary>
 	/// Use ImGui.** statements that you want to render in the Debug window.
 	/// </summary>
@@ -42,7 +32,7 @@ public abstract class ModImGui : ModType
 	}
 
 	/// <summary>
-	/// Create own separate windows.Don't leave ImGui.** instructions on the air, make sure to create a window.
+	/// Create own separate windows. Don't leave ImGui.** instructions on the air, make sure to create a window.
 	/// </summary>
 	public virtual void CustomGUI()
 	{

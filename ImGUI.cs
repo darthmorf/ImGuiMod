@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Terraria;
@@ -21,7 +20,6 @@ public class ImGUI : Mod
 	private IntPtr _imGuiTexture;
 
 	public static ModKeybind DebugKey;
-	public static ModKeybind WindowInfoKey;
 
 	public static ImGUIConfig Config;
 
@@ -31,7 +29,6 @@ public class ImGUI : Mod
 	{
 		Config = ModContent.GetInstance<ImGUIConfig>();
 		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
-		WindowInfoKey = KeybindLoader.RegisterKeybind(this, "General Info Window", Keys.F5);
 
 		ConfigureNative();
 
@@ -211,7 +208,6 @@ public class ImGUI : Mod
 	{
 		_imguiloaded = false;
 		DebugKey = null;
-		WindowInfoKey = null;
 		On.Terraria.Main.DoDraw -= Main_DoDraw;
 		Config = null;
 

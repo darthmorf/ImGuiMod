@@ -9,7 +9,5 @@ public class ImGUIPlayer : ModPlayer
 	{
 		if (ImGUI.DebugKey.JustPressed)
 			ImGUI.Config.DebugWindow = !ImGUI.Config.DebugWindow;
-		if (ImGUI.WindowInfoKey.JustPressed)
-			ImGUI.Config.InfoWindow = !ImGUI.Config.InfoWindow;
 	}
 }

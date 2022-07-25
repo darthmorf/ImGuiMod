@@ -1,1 +1,22 @@
-ImGUI is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+ImGUI
+
+A mod that allows you to use the graphical interface of Dear ImGui in terraria.
+
+For players:
+This mod is a library so if you are a player just don't download it as you won't get any new content or functionality.
+
+For modders:
+If you want to use the library then you should do the following:
+
+Add this line to build.txt:
+ modReferences = ImGUI
+
+Extract this mod to get the reference dlls, go to your IDE and add the reference files:
+ ImGUI.dll and lib/ImGuiNET.dll
+
+Finally, create a class that inherits from ModImGui and override the methods to start using ImGui.** calls
+
+Override DebugGUI to create elements in a window shared with all other ModImGui, override CustomGUI to create your own windows.
+
+Extra notes:
+The goal of this mod is to help you have a very easy way to view information while developing instead of being a way to create GUIs for normal mods.

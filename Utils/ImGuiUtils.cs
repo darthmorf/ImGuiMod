@@ -1,5 +1,4 @@
-﻿global using static ImGUI.Utils.ImGuiUtils;
-using ImGuiNET;
+﻿using ImGuiNET;
 using System;
 using System.Numerics;
 
