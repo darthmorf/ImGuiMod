@@ -1,17 +1,11 @@
 ﻿global using static ImGUI.Utils.ImGuiUtils;
-using ImGUI.Renderer;
 using ImGuiNET;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using System;
 using System.Numerics;
-using Terraria;
-using Terraria.GameContent;
-using Terraria.ModLoader;
 
 namespace ImGUI.Utils;
 
-internal class ImGuiUtils
+public class ImGuiUtils
 {
 	public static void Overlay(ref int corner, ref bool open, Action content)
 	{

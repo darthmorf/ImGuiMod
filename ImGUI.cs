@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Terraria;
@@ -34,13 +35,14 @@ public class ImGUI : Mod
 
 		ConfigureNative();
 
+		log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
+
 		Main.RunOnMainThread(() =>
 		{
-			renderer = new ImGuiRenderer(Main.instance);
+			renderer = new ImGuiRenderer(Main.instance, this);
 			renderer.RebuildFontAtlas();
 
 			LoadContent();
-			log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
 			On.Terraria.Main.DoDraw += Main_DoDraw;
 			UpdateStyle(Config.Style);
 		});
@@ -55,7 +57,7 @@ public class ImGUI : Mod
 
 		// Draw our UI
 		ImGuiLayout();
-
+		
 		// Call AfterLayout now to finish up and draw all the things
 		renderer.AfterLayout();	
 	}
@@ -71,19 +73,45 @@ public class ImGUI : Mod
 	{
 		DockSpace();
 
-		if (Config.DebugWindow && ImGui.Begin("Debug"))
+		DebugWindow();
+
+
+		// draw custom windows
+		ImGuiLoader.CustomGUI();
+		// draw raws
+		ImGuiLoader.BackgroundDraw(ImGui.GetBackgroundDrawList());
+		ImGuiLoader.ForeroundDraw(ImGui.GetForegroundDrawList());
+
+		// show the mouse if is over a window
+		Main.instance.IsMouseVisible = ImGui.IsAnyItemHovered()	|| ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow);
+	}
+
+	private void DebugWindow()
+	{
+		if(AppLog.show_app_log)
 		{
+			AppLog.Show();
+		}
+
+		if (Config.DebugWindow && ImGui.Begin("Debug", ImGuiWindowFlags.MenuBar))
+		{
+			if (ImGui.BeginMenuBar())
+			{
+				if (ImGui.BeginMenu("Options"))
+				{
+					ImGui.MenuItem("Log", null, ref AppLog.show_app_log);
+					if (ImGui.MenuItem("Close"))
+					{
+						Config.DebugWindow = false;
+					}
+					ImGui.EndMenu();
+				}
+				ImGui.EndMenuBar();
+			}
 			ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
 			ImGuiLoader.DebugGUI();
 			ImGui.End();
 		}
-
-		// draw default window
-		WindowInfo.GUI();
-		// draw custom windows
-		ImGuiLoader.CustomGUI();
-
-		Main.instance.IsMouseVisible = ImGui.IsAnyItemHovered()	|| ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow);
 	}
 
 	private static void DockSpace()
@@ -103,8 +131,6 @@ public class ImGUI : Mod
 
 		var dockspace_id = ImGui.GetID("MainDockSpace");
 		ImGui.DockSpace(dockspace_id, System.Numerics.Vector2.Zero, dockspace_flags);
-
-
 
 		ImGui.End();
 	}

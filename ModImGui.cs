@@ -57,4 +57,12 @@ public abstract class ModImGui : ModType, IIndexed
 	{
 
 	}
+
+	/// <summary>
+	/// Use it to draw things on top of ImGUI windows.
+	/// </summary>
+	public virtual void ForeroundDraw(ImDrawListPtr drawList)
+	{
+
+	}
 }

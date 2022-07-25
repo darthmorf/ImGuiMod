@@ -18,6 +18,6 @@ internal class ImGuiAppender : AppenderSkeleton
 
 	protected override void Append(LoggingEvent loggingEvent)
 	{
-		WindowInfo.Logs.Add(RenderLoggingEvent(loggingEvent));
+		AppLog.Logs.Add(RenderLoggingEvent(loggingEvent));
 	}
 }
