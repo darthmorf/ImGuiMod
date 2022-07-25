@@ -117,7 +117,11 @@ public class ImGUI : Mod
 	{
 		if (OperatingSystem.IsWindows())
 			return "cimgui.dll";
-		throw new NotImplementedException();
+		else if (OperatingSystem.IsMacOS())
+			return "libcimgui.dylib";
+		else if (OperatingSystem.IsLinux())
+			return "libcimgui.so";
+		throw new PlatformNotSupportedException();
 	}
 
 	private void ConfigureNative()
