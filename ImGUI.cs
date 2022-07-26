@@ -1,46 +1,68 @@
 using ImGUI.Renderer;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Terraria;
 using Terraria.ModLoader;
 
+[assembly: InternalsVisibleTo("DevTools")]
+
 namespace ImGUI;
 
+/// <summary>
+/// ImGUI mod, used to access de current ImGuiRenderer.
+/// </summary>
 public class ImGUI : Mod
 {
+	// renderer
+	private static ImGuiRenderer renderer;
+
+	/// <summary>
+	/// The current renderer, use to bind textures to use in imgui. 
+	/// </summary>
+	public static ImGuiRenderer Renderer { get => renderer; private set => renderer = value; }
+
+
+	// renderer state
 	private static bool _imguiloaded;
-	public static ImGuiRenderer renderer;
-	private Texture2D _xnaTexture;
-	private IntPtr _imGuiTexture;
 
-	public static ModKeybind DebugKey;
+	// config
+	internal static ModKeybind DebugKey;
+	internal static ImGUIConfig Config;
 
-	public static ImGUIConfig Config;
-
+	// native lib
 	private static IntPtr NativeLib;
+	private static string ImGuiPath => Path.Combine(Main.SavePath, "ImGui");
+	private static string CimguiPath => Path.Combine(ImGuiPath, GetNativePath());
 
+	/// <inheritdoc/>
 	public override void Load()
 	{
+		// configs
 		Config = ModContent.GetInstance<ImGUIConfig>();
 		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
 
 		ConfigureNative();
 
+		// add logger appender to Terraria
 		log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
 
+		//  execute in main thread to RebuildFontAtlas, background threads cant build font atlas
 		Main.RunOnMainThread(() =>
 		{
-			renderer = new ImGuiRenderer(Main.instance, this);
+			// create and configure the renderer
+			renderer = new ImGuiRenderer(this);
 			renderer.RebuildFontAtlas();
 
 			LoadContent();
 			On.Terraria.Main.DoDraw += Main_DoDraw;
+
+			// initial style, can be moved?
 			UpdateStyle(Config.Style);
 		});
 
@@ -48,8 +70,10 @@ public class ImGUI : Mod
 
 	private void Main_DoDraw(On.Terraria.Main.orig_DoDraw orig, Main self, GameTime gameTime)
 	{
+		// render all terraria
 		orig(self, gameTime);
 
+		// Update current state in imgui
 		renderer.BeforeLayout(gameTime);
 
 		// Draw our UI
@@ -59,37 +83,44 @@ public class ImGUI : Mod
 		renderer.AfterLayout();	
 	}
 
+	/// <inheritdoc/>
 	public override void PostSetupContent()
 	{
+		// idk if this go here
 		ImGuiLoader.UpdateHooks();
 	}
 
+	// always true
 	const bool use_work_area = true;
 
 	private void ImGuiLayout()
 	{
+		// confiugre main dock area
 		DockSpace();
-
-		DebugWindow();
-
 
 		// draw custom windows
 		ImGuiLoader.CustomGUI();
+
+		//draw debug window
+		DebugWindow();
+
 		// draw raws
 		ImGuiLoader.BackgroundDraw(ImGui.GetBackgroundDrawList());
 		ImGuiLoader.ForeroundDraw(ImGui.GetForegroundDrawList());
 
+		// todo: add the ability to choose terraria mouse?
 		// show the mouse if is over a window
 		Main.instance.IsMouseVisible = ImGui.IsAnyItemHovered()	|| ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow);
 	}
 
 	private void DebugWindow()
 	{
+		// show the logs
 		if(AppLog.show_app_log)
 		{
 			AppLog.Show();
 		}
-
+			
 		if (Config.DebugWindow && ImGui.Begin("Debug", ImGuiWindowFlags.MenuBar))
 		{
 			if (ImGui.BeginMenuBar())
@@ -105,7 +136,8 @@ public class ImGUI : Mod
 				}
 				ImGui.EndMenuBar();
 			}
-			ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
+			// only whow fps on debug so that it is not empty
+			ImGui.TextWrapped(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
 			ImGuiLoader.DebugGUI();
 			ImGui.End();
 		}
@@ -114,27 +146,27 @@ public class ImGUI : Mod
 	private static void DockSpace()
 	{
 		var viewport = ImGui.GetMainViewport();
+		// dont allow docks in center and make background inivisible.
 		var dockspace_flags = ImGuiDockNodeFlags.PassthruCentralNode | ImGuiDockNodeFlags.NoDockingInCentralNode;
+		// the window itself is cand be docked, obvius.
 		var window_flags = ImGuiWindowFlags.NoDocking;
 		ImGui.SetNextWindowPos(use_work_area ? viewport.WorkPos : viewport.Pos);
 		ImGui.SetNextWindowSize(use_work_area ? viewport.WorkSize : viewport.Size);
 		ImGui.SetNextWindowViewport(viewport.ID);
+		// we want our window to by practicaly not interactable, only need to be a dock parent
 		window_flags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove;
 		window_flags |= ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
 		window_flags |= ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration;
 
 		ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
 		ImGui.Begin("DockSpace Main", window_flags);
-
+		
+		// create de dockspace
 		var dockspace_id = ImGui.GetID("MainDockSpace");
 		ImGui.DockSpace(dockspace_id, System.Numerics.Vector2.Zero, dockspace_flags);
 
 		ImGui.End();
 	}
-
-	public static string ImGuiPath => Path.Combine(Main.SavePath, "ImGui");
-
-	public static string CimguiPath => Path.Combine(ImGuiPath, GetNativePath());
 
 	private static string GetNativePath()
 	{
@@ -149,6 +181,7 @@ public class ImGUI : Mod
 
 	private void ConfigureNative()
 	{
+		// make ImGui resolve the native with a custom resolver
 		Directory.CreateDirectory(ImGuiPath);
 		byte[] nativeByte = GetFileBytes(Path.Combine("lib", GetNativePath()));
 		File.WriteAllBytes(CimguiPath, nativeByte);
@@ -159,10 +192,7 @@ public class ImGUI : Mod
 	{
 		if (libraryName == "cimgui")
 		{
-			if(NativeLib != IntPtr.Zero)
-			{
-				return NativeLib;
-			}
+			if(NativeLib != IntPtr.Zero) return NativeLib;
 			NativeLib =  NativeLibrary.Load(CimguiPath);
 			return NativeLib;
 		}
@@ -172,46 +202,22 @@ public class ImGUI : Mod
 
 	private void LoadContent()
 	{
-		_xnaTexture = CreateTexture(Main.instance.GraphicsDevice, 300, 150, pixel =>
-		{
-			var red = (pixel % 300) / 2;
-			return new Color(red, 1, 1);
-		});
-
-		// Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls
-		_imGuiTexture = renderer.BindTexture(_xnaTexture);
-
+		// enable docking and mark imgui as loaded
 		ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 		_imguiloaded = true;
 	}
 
-	public static Texture2D CreateTexture(GraphicsDevice device, int width, int height, Func<int, Color> paint)
-	{
-		//initialize a texture
-		var texture = new Texture2D(device, width, height);
-
-		//the array holds the color for each pixel in the texture
-		Color[] data = new Color[width * height];
-		for (var pixel = 0; pixel < data.Length; pixel++)
-		{
-			//the function applies the color according to the specified pixel
-			data[pixel] = paint(pixel);
-		}
-
-		//set the color
-		texture.SetData(data);
-
-		return texture;
-	}
-
+	/// <inheritdoc/>
 	public override void Unload()
 	{
+		// stop drawing imgui
+		On.Terraria.Main.DoDraw -= Main_DoDraw;
 		_imguiloaded = false;
 		DebugKey = null;
-		On.Terraria.Main.DoDraw -= Main_DoDraw;
 		Config = null;
 
-		renderer.UnbindTexture(_imGuiTexture);
+		// destroy renderer sources and Free native lib
+		renderer.Unload();
 		NativeLibrary.Free(NativeLib);
 	}
 

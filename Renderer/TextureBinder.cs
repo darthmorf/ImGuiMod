@@ -8,6 +8,9 @@ using Terraria.ModLoader;
 
 namespace ImGUI.Renderer;
 
+/// <summary>
+/// Allow you to get the textures of common Terraria arrays
+/// </summary>
 public class TextureBinder
 {
 	private class TextureBinderSystem : ModSystem
@@ -22,15 +25,30 @@ public class TextureBinder
 		}
 	}
 
+	/// <summary>
+	/// <see cref="TextureAssets.Npc"/> binder.
+	/// </summary>
 	public static TextureBinder npcs;
+	/// <summary>
+	/// <see cref="TextureAssets.Projectile"/> binder.
+	/// </summary>
 	public static TextureBinder proj;
+	/// <summary>
+	/// <see cref="TextureAssets.Item"/> binder.
+	/// </summary>
 	public static TextureBinder item;
+	/// <summary>
+	/// <see cref="TextureAssets.Gore"/> binder.
+	/// </summary>
 	public static TextureBinder gore;
+	/// <summary>
+	/// <see cref="TextureAssets.Buff"/> binder.
+	/// </summary>
 	public static TextureBinder buff;
 
-	private TextureData[] binds;
-	private Func<int, int> framecount;
-	private Asset<Texture2D>[] source;
+	private readonly TextureData[] binds;
+	private readonly Func<int, int> framecount;
+	private readonly Asset<Texture2D>[] source;
 
 	private TextureBinder(Asset<Texture2D>[] npc, Func<int, int> framesResolver)
 	{
@@ -39,21 +57,30 @@ public class TextureBinder
 		framecount = framesResolver;
 	}
 
+	/// <summary>
+	/// Get a binded texture by type.
+	/// </summary>
 	public TextureData GetTextureData(int type) => binds[type];
 
+	/// <summary>
+	/// Bind a texture,if is already binded then unbind and bind again.
+	/// </summary>
 	public void BindTextureData(int type)
 	{
 		if (binds[type].ptr != IntPtr.Zero)
-			ImGUI.renderer.UnbindTexture(binds[type].ptr);
+			ImGUI.Renderer.UnbindTexture(binds[type].ptr);
 		var texture = source[type].Value;
 		binds[type] = new TextureData
 		{
-			ptr = ImGUI.renderer.BindTexture(texture),
+			ptr = ImGUI.Renderer.BindTexture(texture),
 			size = texture.Size(),
 			frames = framecount(type)
 		};
 	}
 
+	/// <summary>
+	/// Get or bind the texture.
+	/// </summary>
 	public TextureData this[int type]
 	{
 		get

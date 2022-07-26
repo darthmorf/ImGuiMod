@@ -1,6 +1,6 @@
 ﻿namespace ImGUI;
 
-public enum ImGuiStyle
+internal enum ImGuiStyle
 {
 	Classic,
 	Dark,

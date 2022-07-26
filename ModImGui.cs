@@ -3,13 +3,16 @@ using Terraria.ModLoader;
 
 namespace ImGUI;
 
-
+/// <summary>
+/// Base class to put ImGui.** calls
+/// </summary>
 public abstract class ModImGui : ModType
 {
-	public ushort Index { get; set; }
+	internal ushort Index { get; set; }
 
-	public static ushort NextIndex;
+	private static ushort NextIndex;
 
+	/// <inheritdoc/>
 	protected sealed override void Register()
 	{
 		ModTypeLookup<ModImGui>.Register(this);
@@ -18,6 +21,7 @@ public abstract class ModImGui : ModType
 
 	}
 
+	/// <inheritdoc/>
 	public sealed override void SetupContent()
 	{
 		SetStaticDefaults();

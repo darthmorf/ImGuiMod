@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace ImGUI;
 
-public class ImGUIPlayer : ModPlayer
+internal class ImGUIPlayer : ModPlayer
 {
 	public override void ProcessTriggers(TriggersSet triggersSet)
 	{

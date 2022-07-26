@@ -12,9 +12,8 @@ internal class ImGuiAppender : AppenderSkeleton
 		{
 			ConversionPattern = "[%d{HH:mm:ss.fff}] [%t/%level] [%logger]: %m"
 		};
+		Name = "ImGUI";
 	}
-
-	public string Name { get; set; } = "ImGUI";
 
 	protected override void Append(LoggingEvent loggingEvent)
 	{

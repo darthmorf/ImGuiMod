@@ -5,21 +5,23 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ImGuiNET;
+using Terraria.ModLoader;
+using Terraria;
 
 namespace ImGUI.Renderer;
 
 /// <summary>
-/// ImGui renderer for use with XNA-likes (FNA & MonoGame)
+/// ImGui renderer for use with XNA-likes (FNA and MonoGame)
 /// </summary>
 public class ImGuiRenderer
 {
 	private Game _game;
 
 	// Graphics
-	private GraphicsDevice _graphicsDevice;
+	private readonly GraphicsDevice _graphicsDevice;
 
 	private BasicEffect _effect;
-	private RasterizerState _rasterizerState;
+	private readonly RasterizerState _rasterizerState;
 
 	private byte[] _vertexData;
 	private VertexBuffer _vertexBuffer;
@@ -30,7 +32,7 @@ public class ImGuiRenderer
 	private int _indexBufferSize;
 
 	// Textures
-	private Dictionary<IntPtr, Texture2D> _loadedTextures;
+	private readonly Dictionary<IntPtr, Texture2D> _loadedTextures;
 
 	private int _textureId = 1;
 	private IntPtr? _fontTextureId;
@@ -38,17 +40,20 @@ public class ImGuiRenderer
 	// Input
 	private int _scrollWheelValue;
 
-	private List<int> _keys = new List<int>();
-	private ImGUI Mod;
+	private readonly List<int> _keys = new();
+	private readonly Mod Mod;
+	private readonly IntPtr context;
 
-	public ImGuiRenderer(Game game, ImGUI imGUI)
+	/// <summary>
+	/// Create a new renderer.
+	/// </summary>
+	public ImGuiRenderer(Mod mod)
 	{
-		Mod = imGUI;
-		var context = ImGui.CreateContext();
+		Mod = mod;
+		context = ImGui.CreateContext();
 		ImGui.SetCurrentContext(context);
-
-		_game = game ?? throw new ArgumentNullException(nameof(game));
-		_graphicsDevice = game.GraphicsDevice;
+		_game = Main.instance;
+		_graphicsDevice = _game.GraphicsDevice;
 
 		_loadedTextures = new Dictionary<IntPtr, Texture2D>();
 
@@ -96,7 +101,7 @@ public class ImGuiRenderer
 	}
 
 	/// <summary>
-	/// Creates a pointer to a texture, which can be passed through ImGui calls such as <see cref="ImGui.Image" />. That pointer is then used by ImGui to let us know what texture to draw
+	/// Creates a pointer to a texture, which can be passed through ImGui calls such as <see cref="ImGui.Image(IntPtr, System.Numerics.Vector2)" />. That pointer is then used by ImGui to let us know what texture to draw
 	/// </summary>
 	public virtual IntPtr BindTexture(Texture2D texture)
 	{
@@ -169,14 +174,27 @@ public class ImGuiRenderer
 		_keys.Add(io.KeyMap[(int)ImGuiKey.Y] = (int)Keys.Y);
 		_keys.Add(io.KeyMap[(int)ImGuiKey.Z] = (int)Keys.Z);
 
-		TextInputEXT.TextInput += c =>
-		{
-		    if (c == '\t') return;
-
-		    ImGui.GetIO().AddInputCharacter(c);
-		};
+		TextInputEXT.TextInput += sendTextuImput;
 
 		ImGui.GetIO().Fonts.AddFontDefault();
+	}
+
+	private void sendTextuImput(char c)
+	{
+		if (c == '\t') return;
+		ImGui.GetIO().AddInputCharacter(c);
+
+	}
+
+	/// <summary>
+	/// Finalize ImGui.
+	/// </summary>
+	public void Unload()
+	{
+		TextInputEXT.TextInput -= sendTextuImput;
+		ImGui.DestroyContext(context);
+		_loadedTextures.Clear();
+		_textureId = 1;
 	}
 
 	/// <summary>
@@ -185,7 +203,7 @@ public class ImGuiRenderer
 	protected virtual Effect UpdateEffect(Texture2D texture)
 	{
 		_effect ??= new BasicEffect(_graphicsDevice);
-
+		
 		var io = ImGui.GetIO();
 
 		_effect.World = Matrix.Identity;

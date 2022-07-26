@@ -3,7 +3,7 @@ using Terraria.ModLoader.Config;
 
 namespace ImGUI;
 
-public class ImGUIConfig : ModConfig
+internal class ImGUIConfig : ModConfig
 {
 	public override ConfigScope Mode => ConfigScope.ClientSide;
 

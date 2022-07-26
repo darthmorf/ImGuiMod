@@ -8,7 +8,10 @@ using Terraria.ModLoader.Core;
 
 namespace ImGUI;
 
-public class ImGuiLoader
+/// <summary>
+/// Hooks for <see cref="ModImGui"/> instances.
+/// </summary>
+public static class ImGuiLoader
 {
 	internal static readonly List<ModImGui> guis = new();
 	private static readonly List<HookList> hooks = new();
@@ -26,6 +29,9 @@ public class ImGuiLoader
 
 	private static HookList HookForeroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.ForeroundDraw);
 
+	/// <summary>
+	/// Call <see cref="ModImGui.ForeroundDraw(ImDrawListPtr)"/> hook.
+	/// </summary>
 	public static void ForeroundDraw(ImDrawListPtr drawList)
 	{
 		foreach (var gui in HookForeroundDraw.arr)
@@ -36,6 +42,9 @@ public class ImGuiLoader
 
 	private static HookList HookBackgroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.BackgroundDraw);
 
+	/// <summary>
+	/// Call <see cref="ModImGui.BackgroundDraw(ImDrawListPtr)"/> hook.
+	/// </summary>
 	public static void BackgroundDraw(ImDrawListPtr drawList)
 	{
 		foreach (var gui in HookBackgroundDraw.arr)
@@ -46,6 +55,9 @@ public class ImGuiLoader
 
 	private static HookList HookDebugGUI = AddHook<Action>(p => p.DebugGUI);
 
+	/// <summary>
+	/// Call <see cref="ModImGui.DebugGUI()"/> hook.
+	/// </summary>
 	public static void DebugGUI()
 	{
 		foreach (var gui in HookDebugGUI.arr)
@@ -56,6 +68,9 @@ public class ImGuiLoader
 
 	private static HookList HookCustomGUI = AddHook<Action>(p => p.CustomGUI);
 
+	/// <summary>
+	/// Call <see cref="ModImGui.CustomGUI()"/> hook.
+	/// </summary>
 	public static void CustomGUI()
 	{
 		foreach (var gui in HookCustomGUI.arr)

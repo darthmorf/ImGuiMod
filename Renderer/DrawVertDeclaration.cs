@@ -3,7 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ImGUI.Renderer;
 
-public static class DrawVertDeclaration
+/// <summary>
+/// Only used in renderer
+/// </summary>
+internal static class DrawVertDeclaration
 {
 	public static readonly VertexDeclaration Declaration;
 
