@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 [assembly: InternalsVisibleTo("DevTools")]
@@ -37,12 +38,15 @@ public class ImGUI : Mod
 
 	// native lib
 	private static IntPtr NativeLib;
-	private static string ImGuiPath => Path.Combine(Main.SavePath, "ImGui");
-	private static string CimguiPath => Path.Combine(ImGuiPath, GetNativePath());
+
+	private static string CimguiPath = Path.GetTempFileName();
+
+	public static bool CanGui => !Main.dedServ && Main.netMode != NetmodeID.Server;
 
 	/// <inheritdoc/>
 	public override void Load()
 	{
+		if (!CanGui) return;
 		// configs
 		Config = ModContent.GetInstance<ImGUIConfig>();
 		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
@@ -86,6 +90,7 @@ public class ImGUI : Mod
 	/// <inheritdoc/>
 	public override void PostSetupContent()
 	{
+		if (!CanGui) return;
 		// idk if this go here
 		ImGuiLoader.UpdateHooks();
 	}
@@ -182,7 +187,6 @@ public class ImGUI : Mod
 	private void ConfigureNative()
 	{
 		// make ImGui resolve the native with a custom resolver
-		Directory.CreateDirectory(ImGuiPath);
 		byte[] nativeByte = GetFileBytes(Path.Combine("lib", GetNativePath()));
 		File.WriteAllBytes(CimguiPath, nativeByte);
 		NativeLibrary.SetDllImportResolver(typeof(ImGui).Assembly, NativeResolver);
@@ -210,6 +214,7 @@ public class ImGUI : Mod
 	/// <inheritdoc/>
 	public override void Unload()
 	{
+		if (!CanGui) return;
 		// stop drawing imgui
 		On.Terraria.Main.DoDraw -= Main_DoDraw;
 		_imguiloaded = false;
@@ -219,6 +224,8 @@ public class ImGUI : Mod
 		// destroy renderer sources and Free native lib
 		renderer.Unload();
 		NativeLibrary.Free(NativeLib);
+		if (FileExists(CimguiPath))
+			File.Delete(CimguiPath);
 	}
 
 	internal static void UpdateStyle(ImGuiStyle style)

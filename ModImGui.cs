@@ -22,6 +22,12 @@ public abstract class ModImGui : ModType
 	}
 
 	/// <inheritdoc/>
+	public sealed override bool IsLoadingEnabled(Mod mod)
+	{
+		return ImGUI.CanGui;
+	}
+
+	/// <inheritdoc/>
 	public sealed override void SetupContent()
 	{
 		SetStaticDefaults();
