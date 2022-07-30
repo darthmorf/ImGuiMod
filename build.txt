@@ -1,5 +1,5 @@
 displayName = ImGUI
 author = Kokopai
-version = 0.12
+version = 0.13
 dllReferences = ImGuiNET
 side = NoSync 

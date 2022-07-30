@@ -192,7 +192,8 @@ public class ImGuiRenderer
 	public void Unload()
 	{
 		TextInputEXT.TextInput -= sendTextuImput;
-		ImGui.DestroyContext(context);
+		// todo: having custom font now crash here, why?
+		//ImGui.DestroyContext(context);
 		_loadedTextures.Clear();
 		_textureId = 1;
 	}

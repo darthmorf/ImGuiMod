@@ -3,6 +3,7 @@ using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -10,6 +11,7 @@ using System.Runtime.InteropServices;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using ImVec4 = System.Numerics.Vector4;
 
 [assembly: InternalsVisibleTo("DevTools")]
 
@@ -33,14 +35,21 @@ public class ImGUI : Mod
 	private static bool _imguiloaded;
 
 	// config
+	internal static ModKeybind ToggleImGUI;
 	internal static ModKeybind DebugKey;
 	internal static ImGUIConfig Config;
+
+	// state
+	public static bool Visible { get; internal set; } = true;
 
 	// native lib
 	private static IntPtr NativeLib;
 
-	private static string CimguiPath = Path.GetTempFileName();
+	private static readonly string CimguiPath = Path.GetTempFileName();
 
+	/// <summary>
+	/// Can imgui be loaded?
+	/// </summary>
 	public static bool CanGui => !Main.dedServ && Main.netMode != NetmodeID.Server;
 
 	/// <inheritdoc/>
@@ -50,6 +59,7 @@ public class ImGUI : Mod
 		// configs
 		Config = ModContent.GetInstance<ImGUIConfig>();
 		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
+		ToggleImGUI = KeybindLoader.RegisterKeybind(this, "Toggle ImGUI", Keys.F5);
 
 		ConfigureNative();
 
@@ -61,7 +71,17 @@ public class ImGUI : Mod
 		{
 			// create and configure the renderer
 			renderer = new ImGuiRenderer(this);
+
+			var io = ImGui.GetIO();
+			io.Fonts.Clear();
+			var fontBytes = GetFileBytes("extras/FONT.TTF");
+			var pinnedArray = GCHandle.Alloc(fontBytes, GCHandleType.Pinned);
+			var pointer = pinnedArray.AddrOfPinnedObject();
+			var f = io.Fonts.AddFontFromMemoryTTF(pointer, fontBytes.Length, 20);
+
 			renderer.RebuildFontAtlas();
+
+			pinnedArray.Free();
 
 			LoadContent();
 			On.Terraria.Main.DoDraw += Main_DoDraw;
@@ -76,6 +96,7 @@ public class ImGUI : Mod
 	{
 		// render all terraria
 		orig(self, gameTime);
+		if(!Visible) return;
 
 		// Update current state in imgui
 		renderer.BeforeLayout(gameTime);
@@ -84,7 +105,13 @@ public class ImGUI : Mod
 		ImGuiLayout();
 		
 		// Call AfterLayout now to finish up and draw all the things
-		renderer.AfterLayout();	
+		renderer.AfterLayout();
+		if(Config.TerrariaMouse)
+		{
+			Main.spriteBatch.Begin();
+			Main.DrawCursor(Main.DrawThickCursor());
+			Main.spriteBatch.End();
+		}
 	}
 
 	/// <inheritdoc/>
@@ -103,6 +130,10 @@ public class ImGUI : Mod
 		// confiugre main dock area
 		DockSpace();
 
+		// todo: why dont work in normal style? something is setting padding to 0
+		var st = ImGui.GetStyle();
+		st.WindowPadding = new System.Numerics.Vector2(10, 10);
+
 		// draw custom windows
 		ImGuiLoader.CustomGUI();
 
@@ -113,9 +144,17 @@ public class ImGUI : Mod
 		ImGuiLoader.BackgroundDraw(ImGui.GetBackgroundDrawList());
 		ImGuiLoader.ForeroundDraw(ImGui.GetForegroundDrawList());
 
-		// todo: add the ability to choose terraria mouse?
-		// show the mouse if is over a window
-		Main.instance.IsMouseVisible = ImGui.IsAnyItemHovered()	|| ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow);
+		
+		InputHelper.Hover = ImGui.IsAnyItemHovered() || ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.RootAndChildWindows | ImGuiHoveredFlags.RectOnly | ImGuiHoveredFlags.AllowWhenDisabled);
+
+		var io = ImGui.GetIO();
+
+		InputHelper.Text = ImGui.IsAnyItemFocused() || io.WantTextInput;
+
+
+		if (!Config.TerrariaMouse)
+			// show the mouse if is over a window
+			Main.instance.IsMouseVisible = InputHelper.Hover;
 	}
 
 	private void DebugWindow()
@@ -126,7 +165,7 @@ public class ImGUI : Mod
 			AppLog.Show();
 		}
 			
-		if (Config.DebugWindow && ImGui.Begin("Debug", ImGuiWindowFlags.MenuBar))
+		if (Config.DebugWindow && ImGui.Begin("Debug", ref Config.DebugWindow, ImGuiWindowFlags.MenuBar))
 		{
 			if (ImGui.BeginMenuBar())
 			{
@@ -233,6 +272,9 @@ public class ImGUI : Mod
 		if (!_imguiloaded) return;
 		switch (style)
 		{
+			case ImGuiStyle.Terraria:
+				setTerrariaStyle();
+				break;
 			case ImGuiStyle.Classic:
 				ImGui.StyleColorsClassic();
 				break;
@@ -243,5 +285,77 @@ public class ImGUI : Mod
 				ImGui.StyleColorsLight();
 				break;
 		}
+		var st = ImGui.GetStyle();
+		st.FrameRounding = 9;
+		st.TabBorderSize = 1;
+		st.WindowRounding = 6;
+		st.PopupRounding = 6;
+		st.ScrollbarRounding = 6;
+		st.GrabRounding = 6;
+		st.ScrollbarSize = 15;
+	}
+
+	private static void setTerrariaStyle()
+	{
+		ImGui.StyleColorsClassic();
+		var style = ImGui.GetStyle();
+		style.Colors[(int)ImGuiCol.Text] = new ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
+		style.Colors[(int)ImGuiCol.TextDisabled] = new ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+		style.Colors[(int)ImGuiCol.WindowBg] = new ImVec4(0.27f, 0.29f, 0.53f, 0.78f);
+		style.Colors[(int)ImGuiCol.ChildBg] = new ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		style.Colors[(int)ImGuiCol.PopupBg] = new ImVec4(0.09f, 0.05f, 0.25f, 0.92f);
+		style.Colors[(int)ImGuiCol.Border] = new ImVec4(0.00f, 0.00f, 0.00f, 0.50f);
+		style.Colors[(int)ImGuiCol.BorderShadow] = new ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		style.Colors[(int)ImGuiCol.FrameBg] = new ImVec4(0.14f, 0.16f, 0.33f, 0.78f);
+		style.Colors[(int)ImGuiCol.FrameBgHovered] = new ImVec4(0.47f, 0.47f, 0.69f, 0.40f);
+		style.Colors[(int)ImGuiCol.FrameBgActive] = new ImVec4(0.42f, 0.41f, 0.64f, 0.69f);
+		style.Colors[(int)ImGuiCol.TitleBg] = new ImVec4(0.27f, 0.27f, 0.54f, 0.83f);
+		style.Colors[(int)ImGuiCol.TitleBgActive] = new ImVec4(0.32f, 0.32f, 0.63f, 0.87f);
+		style.Colors[(int)ImGuiCol.TitleBgCollapsed] = new ImVec4(0.40f, 0.40f, 0.80f, 0.20f);
+		style.Colors[(int)ImGuiCol.MenuBarBg] = new ImVec4(0.40f, 0.40f, 0.55f, 0.80f);
+		style.Colors[(int)ImGuiCol.ScrollbarBg] = new ImVec4(0.28f, 0.35f, 0.62f, 0.69f);
+		style.Colors[(int)ImGuiCol.ScrollbarGrab] = new ImVec4(0.75f, 0.76f, 0.78f, 1.00f);
+		style.Colors[(int)ImGuiCol.ScrollbarGrabHovered] = new ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+		style.Colors[(int)ImGuiCol.ScrollbarGrabActive] = new ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+		style.Colors[(int)ImGuiCol.CheckMark] = new ImVec4(0.90f, 0.90f, 0.90f, 0.50f);
+		style.Colors[(int)ImGuiCol.SliderGrab] = new ImVec4(1.00f, 1.00f, 1.00f, 0.30f);
+		style.Colors[(int)ImGuiCol.SliderGrabActive] = new ImVec4(0.41f, 0.39f, 0.80f, 0.60f);
+		style.Colors[(int)ImGuiCol.Button] = new ImVec4(0.35f, 0.40f, 0.61f, 0.62f);
+		style.Colors[(int)ImGuiCol.ButtonHovered] = new ImVec4(0.40f, 0.48f, 0.71f, 0.79f);
+		style.Colors[(int)ImGuiCol.ButtonActive] = new ImVec4(0.46f, 0.54f, 0.80f, 1.00f);
+		style.Colors[(int)ImGuiCol.Header] = new ImVec4(0.40f, 0.40f, 0.90f, 0.45f);
+		style.Colors[(int)ImGuiCol.HeaderHovered] = new ImVec4(0.45f, 0.45f, 0.90f, 0.80f);
+		style.Colors[(int)ImGuiCol.HeaderActive] = new ImVec4(0.53f, 0.53f, 0.87f, 0.80f);
+		style.Colors[(int)ImGuiCol.Separator] = new ImVec4(0.50f, 0.50f, 0.50f, 0.60f);
+		style.Colors[(int)ImGuiCol.SeparatorHovered] = new ImVec4(0.60f, 0.60f, 0.70f, 1.00f);
+		style.Colors[(int)ImGuiCol.SeparatorActive] = new ImVec4(0.70f, 0.70f, 0.90f, 1.00f);
+		style.Colors[(int)ImGuiCol.ResizeGrip] = new ImVec4(1.00f, 1.00f, 1.00f, 0.10f);
+		style.Colors[(int)ImGuiCol.ResizeGripHovered] = new ImVec4(0.78f, 0.82f, 1.00f, 0.60f);
+		style.Colors[(int)ImGuiCol.ResizeGripActive] = new ImVec4(0.78f, 0.82f, 1.00f, 0.90f);
+		style.Colors[(int)ImGuiCol.Tab] = new ImVec4(0.34f, 0.34f, 0.68f, 0.79f);
+		style.Colors[(int)ImGuiCol.TabHovered] = new ImVec4(0.45f, 0.45f, 0.90f, 0.80f);
+		style.Colors[(int)ImGuiCol.TabActive] = new ImVec4(0.40f, 0.40f, 0.73f, 0.84f);
+		style.Colors[(int)ImGuiCol.TabUnfocused] = new ImVec4(0.28f, 0.28f, 0.57f, 0.82f);
+		style.Colors[(int)ImGuiCol.TabUnfocusedActive] = new ImVec4(0.35f, 0.35f, 0.65f, 0.84f);
+		style.Colors[(int)ImGuiCol.DockingPreview] = new ImVec4(0.90f, 0.85f, 0.40f, 0.31f);
+		style.Colors[(int)ImGuiCol.DockingEmptyBg] = new ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+		style.Colors[(int)ImGuiCol.PlotLines] = new ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+		style.Colors[(int)ImGuiCol.PlotLinesHovered] = new ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+		style.Colors[(int)ImGuiCol.PlotHistogram] = new ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+		style.Colors[(int)ImGuiCol.PlotHistogramHovered] = new ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+		style.Colors[(int)ImGuiCol.TableHeaderBg] = new ImVec4(0.27f, 0.27f, 0.38f, 1.00f);
+		style.Colors[(int)ImGuiCol.TableBorderStrong] = new ImVec4(0.31f, 0.31f, 0.45f, 1.00f);
+		style.Colors[(int)ImGuiCol.TableBorderLight] = new ImVec4(0.26f, 0.26f, 0.28f, 1.00f);
+		style.Colors[(int)ImGuiCol.TableRowBg] = new ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		style.Colors[(int)ImGuiCol.TableRowBgAlt] = new ImVec4(1.00f, 1.00f, 1.00f, 0.07f);
+		style.Colors[(int)ImGuiCol.TextSelectedBg] = new ImVec4(0.00f, 0.00f, 1.00f, 0.35f);
+		style.Colors[(int)ImGuiCol.DragDropTarget] = new ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		style.Colors[(int)ImGuiCol.NavHighlight] = new ImVec4(0.45f, 0.45f, 0.90f, 0.80f);
+		style.Colors[(int)ImGuiCol.NavWindowingHighlight] = new ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+		style.Colors[(int)ImGuiCol.NavWindowingDimBg] = new ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+		style.Colors[(int)ImGuiCol.ModalWindowDimBg] = new ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+
+
+
 	}
 }

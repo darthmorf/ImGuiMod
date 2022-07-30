@@ -12,8 +12,18 @@ internal class ImGUIConfig : ModConfig
 	[Tooltip("Show debug window")]
 	public bool DebugWindow;
 
+	[Label("Terraria mouse")]
+	[DefaultValue(false)]
+	[Tooltip("Use terraria mouse in imgui instead of normal mouse")]
+	public bool TerrariaMouse;
+
+	[Label("Prevent Interaction")]
+	[DefaultValue(true)]
+	[Tooltip("Prevents iterations with the world behind imGUI, for example if you scroll in imgui it doesn't change your selected item")]
+	public bool PreventInteraction;
+
 	[Label("Window Style")]
-	[DefaultValue(ImGuiStyle.Dark)]
+	[DefaultValue(ImGuiStyle.Terraria)]
 	[Tooltip("Color Style of imgui gui")]
 	public ImGuiStyle Style;
 

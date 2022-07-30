@@ -9,5 +9,7 @@ internal class ImGUIPlayer : ModPlayer
 	{
 		if (ImGUI.DebugKey.JustPressed)
 			ImGUI.Config.DebugWindow = !ImGUI.Config.DebugWindow;
+		if (ImGUI.ToggleImGUI.JustPressed)
+			ImGUI.Visible = !ImGUI.Visible;
 	}
 }
