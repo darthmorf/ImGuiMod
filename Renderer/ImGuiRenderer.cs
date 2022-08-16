@@ -15,34 +15,42 @@ namespace ImGUI.Renderer;
 /// </summary>
 public class ImGuiRenderer
 {
-	private Game _game;
+	Game _game;
 
 	// Graphics
-	private readonly GraphicsDevice _graphicsDevice;
+	readonly GraphicsDevice _graphicsDevice;
 
-	private BasicEffect _effect;
-	private readonly RasterizerState _rasterizerState;
+	BasicEffect _effect;
 
-	private byte[] _vertexData;
-	private VertexBuffer _vertexBuffer;
-	private int _vertexBufferSize;
+	readonly RasterizerState _rasterizerState;
 
-	private byte[] _indexData;
-	private IndexBuffer _indexBuffer;
-	private int _indexBufferSize;
+	byte[] _vertexData;
+
+	VertexBuffer _vertexBuffer;
+
+	int _vertexBufferSize;
+
+	byte[] _indexData;
+
+	IndexBuffer _indexBuffer;
+
+	int _indexBufferSize;
 
 	// Textures
-	private readonly Dictionary<IntPtr, Texture2D> _loadedTextures;
+	readonly Dictionary<IntPtr, Texture2D> _loadedTextures;
 
-	private int _textureId = 1;
-	private IntPtr? _fontTextureId;
+	int _textureId = 1;
+
+	IntPtr? _fontTextureId;
 
 	// Input
-	private int _scrollWheelValue;
+	int _scrollWheelValue;
 
-	private readonly List<int> _keys = new();
-	private readonly Mod Mod;
-	private readonly IntPtr context;
+	readonly List<int> _keys = new();
+
+	readonly Mod Mod;
+
+	readonly IntPtr context;
 
 	/// <summary>
 	/// Create a new renderer.
@@ -55,9 +63,9 @@ public class ImGuiRenderer
 		_game = Main.instance;
 		_graphicsDevice = _game.GraphicsDevice;
 
-		_loadedTextures = new Dictionary<IntPtr, Texture2D>();
+		_loadedTextures = new();
 
-		_rasterizerState = new RasterizerState()
+		_rasterizerState = new()
 		{
 			CullMode = CullMode.None,
 			DepthBias = 0,
@@ -79,11 +87,11 @@ public class ImGuiRenderer
 	{
 		// Get font texture from ImGui
 		var io = ImGui.GetIO();
-		io.Fonts.GetTexDataAsRGBA32(out byte* pixelData, out int width, out int height, out int bytesPerPixel);
+		io.Fonts.GetTexDataAsRGBA32(out byte* pixelData, out var width, out var height, out var bytesPerPixel);
 
 		// Copy the data to a managed array
 		var pixels = new byte[width * height * bytesPerPixel];
-		unsafe { Marshal.Copy(new IntPtr(pixelData), pixels, 0, pixels.Length); }
+		unsafe { Marshal.Copy(new(pixelData), pixels, 0, pixels.Length); }
 
 		// Create and register the texture as an XNA texture
 		var tex2d = new Texture2D(_graphicsDevice, width, height, false, SurfaceFormat.Color);
@@ -179,7 +187,7 @@ public class ImGuiRenderer
 		ImGui.GetIO().Fonts.AddFontDefault();
 	}
 
-	private void sendTextuImput(char c)
+	void sendTextuImput(char c)
 	{
 		if (c == '\t') return;
 		ImGui.GetIO().AddInputCharacter(c);
@@ -203,7 +211,7 @@ public class ImGuiRenderer
 	/// </summary>
 	protected virtual Effect UpdateEffect(Texture2D texture)
 	{
-		_effect ??= new BasicEffect(_graphicsDevice);
+		_effect ??= new(_graphicsDevice);
 		
 		var io = ImGui.GetIO();
 
@@ -227,7 +235,7 @@ public class ImGuiRenderer
 		var mouse = Mouse.GetState();
 		var keyboard = Keyboard.GetState();
 
-		for (int i = 0; i < _keys.Count; i++)
+		for (var i = 0; i < _keys.Count; i++)
 		{
 			io.KeysDown[_keys[i]] = keyboard.IsKeyDown((Keys)_keys[i]);
 		}
@@ -237,10 +245,10 @@ public class ImGuiRenderer
 		io.KeyAlt = keyboard.IsKeyDown(Keys.LeftAlt) || keyboard.IsKeyDown(Keys.RightAlt);
 		io.KeySuper = keyboard.IsKeyDown(Keys.LeftWindows) || keyboard.IsKeyDown(Keys.RightWindows);
 
-		io.DisplaySize = new System.Numerics.Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
-		io.DisplayFramebufferScale = new System.Numerics.Vector2(1f, 1f);
+		io.DisplaySize = new(_graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
+		io.DisplayFramebufferScale = new(1f, 1f);
 
-		io.MousePos = new System.Numerics.Vector2(mouse.X, mouse.Y);
+		io.MousePos = new(mouse.X, mouse.Y);
 
 		io.MouseDown[0] = mouse.LeftButton == ButtonState.Pressed;
 		io.MouseDown[1] = mouse.RightButton == ButtonState.Pressed;
@@ -258,7 +266,7 @@ public class ImGuiRenderer
 	/// <summary>
 	/// Gets the geometry as set up by ImGui and sends it to the graphics device
 	/// </summary>
-	private void RenderDrawData(ImDrawDataPtr drawData)
+	void RenderDrawData(ImDrawDataPtr drawData)
 	{
 		// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, vertex/texcoord/color pointers
 		var lastViewport = _graphicsDevice.Viewport;
@@ -273,7 +281,7 @@ public class ImGuiRenderer
 		drawData.ScaleClipRects(ImGui.GetIO().DisplayFramebufferScale);
 
 		// Setup projection
-		_graphicsDevice.Viewport = new Viewport(0, 0, _graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
+		_graphicsDevice.Viewport = new(0, 0, _graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
 
 		UpdateBuffers(drawData);
 
@@ -284,7 +292,7 @@ public class ImGuiRenderer
 		_graphicsDevice.ScissorRectangle = lastScissorBox;
 	}
 
-	private unsafe void UpdateBuffers(ImDrawDataPtr drawData)
+	unsafe void UpdateBuffers(ImDrawDataPtr drawData)
 	{
 		if (drawData.TotalVtxCount == 0)
 		{
@@ -297,7 +305,7 @@ public class ImGuiRenderer
 			_vertexBuffer?.Dispose();
 
 			_vertexBufferSize = (int)(drawData.TotalVtxCount * 1.5f);
-			_vertexBuffer = new VertexBuffer(_graphicsDevice, DrawVertDeclaration.Declaration, _vertexBufferSize, BufferUsage.None);
+			_vertexBuffer = new(_graphicsDevice, DrawVertDeclaration.Declaration, _vertexBufferSize, BufferUsage.None);
 			_vertexData = new byte[_vertexBufferSize * DrawVertDeclaration.Size];
 			Mod.Logger.Info($"Resize vertex buffer to {_vertexBufferSize}");
 		}
@@ -307,18 +315,18 @@ public class ImGuiRenderer
 			_indexBuffer?.Dispose();
 
 			_indexBufferSize = (int)(drawData.TotalIdxCount * 1.5f);
-			_indexBuffer = new IndexBuffer(_graphicsDevice, IndexElementSize.SixteenBits, _indexBufferSize, BufferUsage.None);
+			_indexBuffer = new(_graphicsDevice, IndexElementSize.SixteenBits, _indexBufferSize, BufferUsage.None);
 			_indexData = new byte[_indexBufferSize * sizeof(ushort)];
 			Mod.Logger.Info($"Resize index buffer to {_indexBufferSize}");
 		}
 
 		// Copy ImGui's vertices and indices to a set of managed byte arrays
-		int vtxOffset = 0;
-		int idxOffset = 0;
+		var vtxOffset = 0;
+		var idxOffset = 0;
 
-		for (int n = 0; n < drawData.CmdListsCount; n++)
+		for (var n = 0; n < drawData.CmdListsCount; n++)
 		{
-			ImDrawListPtr cmdList = drawData.CmdListsRange[n];
+			var cmdList = drawData.CmdListsRange[n];
 
 			fixed (void* vtxDstPtr = &_vertexData[vtxOffset * DrawVertDeclaration.Size])
 			fixed (void* idxDstPtr = &_indexData[idxOffset * sizeof(ushort)])
@@ -336,21 +344,21 @@ public class ImGuiRenderer
 		_indexBuffer.SetData(_indexData, 0, drawData.TotalIdxCount * sizeof(ushort));
 	}
 
-	private unsafe void RenderCommandLists(ImDrawDataPtr drawData)
+	unsafe void RenderCommandLists(ImDrawDataPtr drawData)
 	{
 		_graphicsDevice.SetVertexBuffer(_vertexBuffer);
 		_graphicsDevice.Indices = _indexBuffer;
 
-		int vtxOffset = 0;
-		int idxOffset = 0;
+		var vtxOffset = 0;
+		var idxOffset = 0;
 
-		for (int n = 0; n < drawData.CmdListsCount; n++)
+		for (var n = 0; n < drawData.CmdListsCount; n++)
 		{
-			ImDrawListPtr cmdList = drawData.CmdListsRange[n];
+			var cmdList = drawData.CmdListsRange[n];
 
-			for (int cmdi = 0; cmdi < cmdList.CmdBuffer.Size; cmdi++)
+			for (var cmdi = 0; cmdi < cmdList.CmdBuffer.Size; cmdi++)
 			{
-				ImDrawCmdPtr drawCmd = cmdList.CmdBuffer[cmdi];
+				var drawCmd = cmdList.CmdBuffer[cmdi];
 
 				if (drawCmd.ElemCount == 0)
 				{
@@ -362,7 +370,7 @@ public class ImGuiRenderer
 					throw new InvalidOperationException($"Could not find a texture with id '{drawCmd.TextureId}', please check your bindings");
 				}
 
-				_graphicsDevice.ScissorRectangle = new Rectangle(
+				_graphicsDevice.ScissorRectangle = new(
 					(int)drawCmd.ClipRect.X,
 					(int)drawCmd.ClipRect.Y,
 					(int)(drawCmd.ClipRect.Z - drawCmd.ClipRect.X),

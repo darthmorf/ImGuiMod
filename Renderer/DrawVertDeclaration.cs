@@ -16,7 +16,7 @@ internal static class DrawVertDeclaration
 	{
 		unsafe { Size = sizeof(ImDrawVert); }
 
-		Declaration = new VertexDeclaration(
+		Declaration = new(
 			Size,
 
 			// Position

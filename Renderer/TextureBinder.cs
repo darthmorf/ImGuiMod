@@ -13,7 +13,7 @@ namespace ImGUI.Renderer;
 /// </summary>
 public class TextureBinder
 {
-	private class TextureBinderSystem : ModSystem
+	class TextureBinderSystem : ModSystem
 	{
 		public override void PostSetupContent()
 		{
@@ -46,11 +46,13 @@ public class TextureBinder
 	/// </summary>
 	public static TextureBinder buff;
 
-	private readonly TextureData[] binds;
-	private readonly Func<int, int> framecount;
-	private readonly Asset<Texture2D>[] source;
+	readonly TextureData[] binds;
 
-	private TextureBinder(Asset<Texture2D>[] npc, Func<int, int> framesResolver)
+	readonly Func<int, int> framecount;
+
+	readonly Asset<Texture2D>[] source;
+
+	TextureBinder(Asset<Texture2D>[] npc, Func<int, int> framesResolver)
 	{
 		source = npc;
 		binds = new TextureData[npc.Length];
@@ -70,7 +72,7 @@ public class TextureBinder
 		if (binds[type].ptr != IntPtr.Zero)
 			ImGUI.Renderer.UnbindTexture(binds[type].ptr);
 		var texture = source[type].Value;
-		binds[type] = new TextureData
+		binds[type] = new()
 		{
 			ptr = ImGUI.Renderer.BindTexture(texture),
 			size = texture.Size(),

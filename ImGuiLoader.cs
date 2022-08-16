@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Terraria.ModLoader.Core;
+// ReSharper disable InconsistentNaming
 
 namespace ImGUI;
 
@@ -14,11 +15,12 @@ namespace ImGUI;
 public static class ImGuiLoader
 {
 	internal static readonly List<ModImGui> guis = new();
-	private static readonly List<HookList> hooks = new();
 
-	private class HookList
+	static readonly List<HookList> hooks = new();
+
+	class HookList
 	{
-		public int[] arr = new int[0];
+		public int[] arr = Array.Empty<int>();
 		public readonly MethodInfo method;
 
 		public HookList(MethodInfo method)
@@ -27,7 +29,7 @@ public static class ImGuiLoader
 		}
 	}
 
-	private static HookList HookForeroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.ForeroundDraw);
+	static readonly HookList HookForeroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.ForeroundDraw);
 
 	/// <summary>
 	/// Call <see cref="ModImGui.ForeroundDraw(ImDrawListPtr)"/> hook.
@@ -40,7 +42,7 @@ public static class ImGuiLoader
 		}
 	}
 
-	private static HookList HookBackgroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.BackgroundDraw);
+	static readonly HookList HookBackgroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.BackgroundDraw);
 
 	/// <summary>
 	/// Call <see cref="ModImGui.BackgroundDraw(ImDrawListPtr)"/> hook.
@@ -53,7 +55,7 @@ public static class ImGuiLoader
 		}
 	}
 
-	private static HookList HookDebugGUI = AddHook<Action>(p => p.DebugGUI);
+	static readonly HookList HookDebugGUI = AddHook<Action>(p => p.DebugGUI);
 
 	/// <summary>
 	/// Call <see cref="ModImGui.DebugGUI()"/> hook.
@@ -65,8 +67,21 @@ public static class ImGuiLoader
 			guis[gui].DebugGUI();
 		}
 	}
+	
+	static readonly HookList HookOverlayGUI = AddHook<Action>(p => p.OverlayGUI);
 
-	private static HookList HookCustomGUI = AddHook<Action>(p => p.CustomGUI);
+	/// <summary>
+	/// Call <see cref="ModImGui.OverlayGUI()"/> hook.
+	/// </summary>
+	public static void OverlayGUI()
+	{
+		foreach (var gui in HookOverlayGUI.arr)
+		{
+			guis[gui].OverlayGUI();
+		}
+	}
+
+	static readonly HookList HookCustomGUI = AddHook<Action>(p => p.CustomGUI);
 
 	/// <summary>
 	/// Call <see cref="ModImGui.CustomGUI()"/> hook.
@@ -75,7 +90,8 @@ public static class ImGuiLoader
 	{
 		foreach (var gui in HookCustomGUI.arr)
 		{
-			guis[gui].CustomGUI();
+			if(ImGUI.Visible || guis[gui].AlwaysVisible)
+				guis[gui].CustomGUI();
 		}
 	}
 
@@ -87,7 +103,7 @@ public static class ImGuiLoader
 		}
 	}
 
-	private static HookList AddHook<F>(Expression<Func<ModImGui, F>> func) where F : Delegate
+	static HookList AddHook<F>(Expression<Func<ModImGui, F>> func) where F : Delegate
 	{
 		var hook = new HookList(func.ToMethodInfo());
 

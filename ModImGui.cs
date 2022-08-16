@@ -8,15 +8,17 @@ namespace ImGUI;
 /// </summary>
 public abstract class ModImGui : ModType
 {
+	public virtual bool AlwaysVisible => false;
+	
 	internal ushort Index { get; set; }
 
-	private static ushort NextIndex;
+	static ushort _NextIndex;
 
 	/// <inheritdoc/>
 	protected sealed override void Register()
 	{
 		ModTypeLookup<ModImGui>.Register(this);
-		Index = NextIndex++;
+		Index = _NextIndex++;
 		ImGuiLoader.guis.Add(this);
 
 	}
@@ -47,6 +49,14 @@ public abstract class ModImGui : ModType
 	public virtual void CustomGUI()
 	{
 
+	}
+
+	/// <summary>
+	/// same as CustomGUI but things are not hidden by hiding ImGUI
+	/// </summary>
+	public virtual void OverlayGUI()
+	{
+		
 	}
 
 	/// <summary>

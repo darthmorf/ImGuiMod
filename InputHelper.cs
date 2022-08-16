@@ -15,7 +15,7 @@ internal class InputHelper : ILoadable
 		On.Terraria.GameInput.PlayerInput.UpdateInput += Updateinput;
 	}
 
-	private void Updateinput(On.Terraria.GameInput.PlayerInput.orig_UpdateInput orig)
+	void Updateinput(On.Terraria.GameInput.PlayerInput.orig_UpdateInput orig)
 	{
 		orig();
 		if (!ImGUI.Visible || !ImGUI.Config.PreventInteraction) return;

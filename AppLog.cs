@@ -1,56 +1,60 @@
 ﻿using ImGuiNET;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Numerics;
 
 namespace ImGUI;
 
-internal class AppLog
+public static class AppLog
 {
-	internal static bool show_app_log;
-	private static bool AutoScrollLogs = true;
-	internal static List<string> Logs = new();
+	internal static bool ShowAppLog;
 
+	static bool _AutoScrollLogs = true;
+	internal static readonly List<string> Logs = new();
+
+	public static  ReadOnlyCollection<string> TmodLogs => Logs.AsReadOnly();
+	
 	internal static void Show()
 	{
-		if (ImGui.Begin("tMod Logs", ref show_app_log))
+		if (!ImGui.Begin("tMod Logs", ref ShowAppLog))
+			return;
+
+		// Options menu
+		if (ImGui.BeginPopup("LogOptions"))
 		{
-			// Options menu
-			if (ImGui.BeginPopup("LogOptions"))
-			{
-				ImGui.Checkbox("Auto-scroll", ref AutoScrollLogs);
-				ImGui.EndPopup();
-			}
-
-			if (ImGui.Button("Options"))
-				ImGui.OpenPopup("LogOptions");
-
-			ImGui.SameLine();
-			bool clear = ImGui.Button("Clear");
-			ImGui.SameLine();
-			bool copy = ImGui.Button("Copy");
-
-			ImGui.Separator();
-			ImGui.BeginChild("scrolling", Vector2.Zero, false, ImGuiWindowFlags.HorizontalScrollbar);
-
-			if (clear)
-				Logs.Clear();
-			if (copy)
-				ImGui.LogToClipboard();
-
-			ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
-
-			foreach (var log in Logs.ToArray())
-			{
-				ImGui.TextUnformatted(log);
-			}
-
-			ImGui.PopStyleVar();
-
-			if (AutoScrollLogs && ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
-				ImGui.SetScrollHereY(1.0f);
-
-			ImGui.EndChild();
-			ImGui.End();
+			ImGui.Checkbox("Auto-scroll", ref _AutoScrollLogs);
+			ImGui.EndPopup();
 		}
+
+		if (ImGui.Button("Options"))
+			ImGui.OpenPopup("LogOptions");
+
+		ImGui.SameLine();
+		var clear = ImGui.Button("Clear");
+		ImGui.SameLine();
+		var copy = ImGui.Button("Copy");
+
+		ImGui.Separator();
+		ImGui.BeginChild("scrolling", Vector2.Zero, false, ImGuiWindowFlags.HorizontalScrollbar);
+
+		if (clear)
+			Logs.Clear();
+		if (copy)
+			ImGui.LogToClipboard();
+
+		ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
+
+		foreach (var log in Logs.ToArray())
+		{
+			ImGui.TextUnformatted(log);
+		}
+
+		ImGui.PopStyleVar();
+
+		if (_AutoScrollLogs && ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
+			ImGui.SetScrollHereY(1.0f);
+
+		ImGui.EndChild();
+		ImGui.End();
 	}
 }
