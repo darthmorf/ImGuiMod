@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -145,7 +147,12 @@ public class ImGUI : Mod
 		ImGuiLoader.OverlayGUI();
 
 		//draw debug window
-		if(Visible) DebugWindow();
+		if (Visible)
+		{
+			if(Config.ShowMetricsWindow)
+				ImGui.ShowMetricsWindow(ref Config.ShowMetricsWindow); 
+			DebugWindow(); 
+		}
 
 		// draw raws
 		ImGuiLoader.BackgroundDraw(ImGui.GetBackgroundDrawList());
@@ -166,6 +173,7 @@ public class ImGUI : Mod
 
 	static void DebugWindow()
 	{
+		if (Main.gameMenu && !Config.DebugWindowInMainMenu) return;
 		// show the logs
 		if(AppLog.ShowAppLog)
 		{
@@ -195,6 +203,9 @@ public class ImGUI : Mod
 		ImGui.End();
 	}
 
+	private static unsafe void Image(IntPtr ptr, System.Numerics.Vector2 size, System.Numerics.Vector2 uv0, System.Numerics.Vector2 uv1)
+	{
+		var start = ImGui.GetCursorScreenPos();
 	static void DockSpace()
 	{
 		var viewport = ImGui.GetMainViewport();
@@ -237,6 +248,7 @@ public class ImGUI : Mod
 		var nativeByte = GetFileBytes(Path.Combine("lib", GetNativePath()));
 		File.WriteAllBytes(CimguiPath, nativeByte);
 		NativeLibrary.SetDllImportResolver(typeof(ImGui).Assembly, NativeResolver);
+		NativeLibrary.SetDllImportResolver(typeof(ImGUI).Assembly, NativeResolver);
 	}
 
 	static IntPtr NativeResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)

@@ -7,13 +7,14 @@ internal class ImGUIConfig : ModConfig
 {
 	public override ConfigScope Mode => ConfigScope.ClientSide;
 
+	[Header("ImGui config")]
 	[Label("Debug Window")]
 	[DefaultValue(false)]
 	[Tooltip("Show debug window")]
 	public bool DebugWindow;
 
 	[Label("Terraria mouse")]
-	[DefaultValue(false)]
+	[DefaultValue(true)]
 	[Tooltip("Use terraria mouse in imgui instead of normal mouse")]
 	public bool TerrariaMouse;
 
@@ -26,6 +27,17 @@ internal class ImGUIConfig : ModConfig
 	[DefaultValue(ImGuiStyle.Terraria)]
 	[Tooltip("Color Style of imgui gui")]
 	public ImGuiStyle Style;
+
+	[Label("Debug in Main Menu")]
+	[DefaultValue(false)]
+	[Tooltip("Render the debug window and all its nodes in the main menu")]
+	public bool DebugWindowInMainMenu;
+
+	[Header("ImGui dev")]
+	[Label("Metrics Window")]
+	[DefaultValue(false)]
+	[Tooltip("Show metrics window, for developers only")]
+	public bool ShowMetricsWindow;
 
 	public override void OnChanged()
 	{

@@ -8,7 +8,15 @@ namespace ImGUI;
 /// </summary>
 public abstract class ModImGui : ModType
 {
+	/// <summary>
+	/// Indicates that this custom gui should be rendered even when the main imgui is hidden.
+	/// </summary>
 	public virtual bool AlwaysVisible => false;
+
+	/// <summary>
+	/// Indicates that this gui should be rendered even in the main menu.
+	/// </summary>
+	public virtual bool RenderInMainMenu => false;
 	
 	internal ushort Index { get; set; }
 
@@ -19,8 +27,7 @@ public abstract class ModImGui : ModType
 	{
 		ModTypeLookup<ModImGui>.Register(this);
 		Index = _NextIndex++;
-		ImGuiLoader.guis.Add(this);
-
+		ImGuiLoader.guis.Add(this);	
 	}
 
 	/// <inheritdoc/>
