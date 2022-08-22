@@ -1,3 +1,4 @@
+using ImGUI.Internals;
 using ImGUI.Renderer;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
@@ -10,7 +11,6 @@ using System.Runtime.InteropServices;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ImVec4 = System.Numerics.Vector4;
 
 [assembly: InternalsVisibleTo("DevTools")]
 
@@ -44,7 +44,6 @@ public class ImGUI : Mod
 
 	// native lib
 	static IntPtr _NativeLib;
-
 	static readonly string CimguiPath = Path.GetTempFileName();
 
 	/// <summary>
@@ -60,7 +59,7 @@ public class ImGUI : Mod
 		Config = ModContent.GetInstance<ImGUIConfig>();
 		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
 		ToggleImGui = KeybindLoader.RegisterKeybind(this, "Toggle ImGUI", Keys.F5);
-
+		
 		ConfigureNative();
 
 		// add logger appender to Terraria
@@ -86,7 +85,6 @@ public class ImGUI : Mod
 			pinnedArray.Free();
 
 			LoadContent();
-			On.Terraria.Main.DoDraw += Main_DoDraw;
 
 			// initial style, can be moved?
 			UpdateStyle(Config.Style);
@@ -94,7 +92,7 @@ public class ImGUI : Mod
 
 	}
 
-	void Main_DoDraw(On.Terraria.Main.orig_DoDraw orig, Main self, GameTime gameTime)
+	internal static void Main_DoDraw(On.Terraria.Main.orig_DoDraw orig, Main self, GameTime gameTime)
 	{
 		// render all terraria
 		orig(self, gameTime);
@@ -126,7 +124,7 @@ public class ImGUI : Mod
 	// always true
 	const bool UseWorkArea = true;
 
-	void ImGuiLayout()
+	static void ImGuiLayout()
 	{
 		// confiugre main dock area
 		DockSpace();
@@ -161,7 +159,7 @@ public class ImGUI : Mod
 			Main.instance.IsMouseVisible = InputHelper.Hover;
 	}
 
-	void DebugWindow()
+	static void DebugWindow()
 	{
 		// show the logs
 		if(AppLog.ShowAppLog)
@@ -251,6 +249,20 @@ public class ImGUI : Mod
 		// enable docking and mark imgui as loaded
 		ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 		_Imguiloaded = true;
+
+		var modloader = typeof(ModLoader);
+		var onload = modloader.GetField("OnSuccessfulLoad", BindingFlags.NonPublic | BindingFlags.Static);
+		var current = (Action)onload.GetValue(null);
+		Action a = () => {
+			if(current == null)
+				Main.menuMode = 0;
+			On.Terraria.Main.DoDraw += ImGUI.Main_DoDraw;
+		};
+
+		if (current == null)
+			onload.SetValue(null, a);
+		else
+			onload.SetValue(null, Delegate.Combine(current, a));
 	}
 
 	/// <inheritdoc/>
