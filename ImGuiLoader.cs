@@ -1,11 +1,11 @@
 ﻿using ImGUI.Internals;
-using ImGUI.Renderer;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
 // ReSharper disable InconsistentNaming
 
@@ -71,7 +71,8 @@ public static class ImGuiLoader
 		foreach (var gui in HookDebugGUI.arr)
 		{
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
-			guis[gui].DebugGUI();
+			if (!ImGui.CollapsingHeader(guis[gui].Mod.DisplayName)) return;
+				guis[gui].DebugGUI();
 			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
