@@ -66,6 +66,8 @@ public class ImGUI : Mod
 		// add logger appender to Terraria
 		log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
 
+		ImGuiIlEdit.Apply();
+
 		//  execute in main thread to RebuildFontAtlas, background threads cant build font atlas
 		Main.RunOnMainThread(() =>
 		{
@@ -257,6 +259,8 @@ public class ImGUI : Mod
 		if (!CanGui) return;
 		// stop drawing imgui
 		On.Terraria.Main.DoDraw -= Main_DoDraw;
+		// reverts
+		ImGuiIlEdit.Revert();
 		_Imguiloaded = false;
 		DebugKey = null;
 		Config = null;

@@ -1,4 +1,6 @@
-﻿using ImGuiNET;
+﻿using ImGUI.Internals;
+using ImGUI.Renderer;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +40,9 @@ public static class ImGuiLoader
 	{
 		foreach (var gui in HookForeroundDraw.arr)
 		{
+			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 			guis[gui].ForeroundDraw(drawList);
+			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
 
@@ -51,7 +55,9 @@ public static class ImGuiLoader
 	{
 		foreach (var gui in HookBackgroundDraw.arr)
 		{
+			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 			guis[gui].BackgroundDraw(drawList);
+			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
 
@@ -64,7 +70,9 @@ public static class ImGuiLoader
 	{
 		foreach (var gui in HookDebugGUI.arr)
 		{
+			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 			guis[gui].DebugGUI();
+			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
 	
@@ -77,8 +85,11 @@ public static class ImGuiLoader
 	{
 		foreach (var gui in HookOverlayGUI.arr)
 		{
+			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 			guis[gui].OverlayGUI();
+			ImGuiIlEdit.CurrentModGui = null;
 		}
+		
 	}
 
 	static readonly HookList HookCustomGUI = AddHook<Action>(p => p.CustomGUI);
@@ -90,8 +101,12 @@ public static class ImGuiLoader
 	{
 		foreach (var gui in HookCustomGUI.arr)
 		{
-			if(ImGUI.Visible || guis[gui].AlwaysVisible)
+			if (ImGUI.Visible || guis[gui].AlwaysVisible)
+			{
+				ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 				guis[gui].CustomGUI();
+				ImGuiIlEdit.CurrentModGui = null;
+			}
 		}
 	}
 

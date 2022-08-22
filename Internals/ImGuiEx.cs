@@ -38,4 +38,15 @@ public static class ImGuiEx
 		}
 		return num2 != 0;
 	}
+
+	public static void SetNextWindowTitleAnimated()
+	{
+		ImGuiIlEdit.NextWindowAnimatedTitle = true;
+	}
+
+	public static void SetNextWindowId(string id)
+	{
+		ImGuiIlEdit.NextWindowID = id;
+	}
+
 }
