@@ -22,6 +22,7 @@ public class TextureBinder
 			item = new(TextureAssets.Item, t => Main.itemAnimations[t]?.FrameCount ?? 1);
 			gore = new(TextureAssets.Gore, t => 1);
 			buff = new(TextureAssets.Buff, t => 1);
+			tile = new(TextureAssets.Tile, t => 1);
 		}
 	}
 
@@ -45,6 +46,10 @@ public class TextureBinder
 	/// <see cref="TextureAssets.Buff"/> binder.
 	/// </summary>
 	public static TextureBinder buff;
+	/// <summary>
+	/// <see cref="TextureAssets.Tile"/> binder.
+	/// </summary>
+	public static TextureBinder tile;
 
 	readonly TextureData[] binds;
 
