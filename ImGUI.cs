@@ -66,13 +66,11 @@ public class ImGUI : Mod
 		log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
 
 		ImGuiIlEdit.Apply();
-
+		// create and configure the renderer
+		Renderer = new(this);
 		//  execute in main thread to RebuildFontAtlas, background threads cant build font atlas
 		Main.RunOnMainThread(() =>
 		{
-			// create and configure the renderer
-			Renderer = new(this);
-
 			var io = ImGui.GetIO();
 			io.Fonts.Clear();
 			var fontBytes = GetFileBytes("extras/FONT.TTF");
