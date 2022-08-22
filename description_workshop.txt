@@ -22,3 +22,5 @@ Override [code]DebugGUI[/code] to create elements in a window shared with all ot
 The goal of this mod is to help you have a very easy way to view information while developing instead of being a way to create GUIs for normal mods.
 
 [url=https://github.com/Tabizzz/ImGuiMod]GitHub[/url]
+
+Enter this [url=https://discord.gg/HcS724M5Ar]Discord[/url] to receive help when you are developing with the mod
