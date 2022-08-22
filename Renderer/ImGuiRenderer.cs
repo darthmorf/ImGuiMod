@@ -39,7 +39,7 @@ public class ImGuiRenderer
 	// Textures
 	readonly Dictionary<IntPtr, Texture2D> _loadedTextures;
 
-	int _textureId = 1;
+	int _textureId = 0;
 
 	IntPtr? _fontTextureId;
 
