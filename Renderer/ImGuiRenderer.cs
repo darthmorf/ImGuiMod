@@ -37,7 +37,7 @@ public class ImGuiRenderer
 	int _indexBufferSize;
 
 	// Textures
-	readonly Dictionary<IntPtr, Texture2D> _loadedTextures;
+	internal readonly Dictionary<IntPtr, Texture2D> _loadedTextures;
 
 	int _textureId = 0;
 

@@ -26,7 +26,7 @@ public struct TextureData
 	/// </summary>
 	/// <param name="tsize">the size of the image.</param>
 	/// <returns>The scaled values to fit the square image.</returns>
-	public System.Numerics.Vector2 Transform(int tsize)
+	public ImVec2 Transform(float tsize)
 	{
 		var Y = size.Y / frames;
 		var X = size.X;
@@ -47,7 +47,7 @@ public struct TextureData
 	/// </summary>
 	/// <param name="frame">Frame number.</param>
 	/// <returns>The uv required to display this frame.</returns>
-	public System.Numerics.Vector2 Uv0(int frame)
+	public ImVec2 Uv0(int frame)
 	{
 		var Y = size.Y / frames;
 		return new(0, Y * (frame - 1) / size.Y);
@@ -58,9 +58,46 @@ public struct TextureData
 	/// </summary>
 	/// <param name="frame">Frame number.</param>
 	/// <returns>The uv required to display this frame.</returns>
-	public System.Numerics.Vector2 Uv1(int frame)
+	public ImVec2 Uv1(int frame)
 	{
 		var Y = size.Y / frames;
 		return new(1, Y * frame / size.Y);
+	}
+
+	internal ImVec2 Transform(float tsize, int verticalFrames = 1, int horizontalFrames = 1)
+	{
+		var Y = size.Y / verticalFrames;
+		var X = size.X / horizontalFrames;
+		if (X == Y)
+		{
+			return new(tsize, tsize);
+		}
+		if (Y < size.X)
+		{
+			return new(tsize, Y * tsize / X);
+		}
+		return new(X * tsize / Y, tsize);
+	}
+
+	internal ImVec2 Uv0(int verticalFrames, int horizontalFrames, int frameX, int frameY)
+	{
+		var Y = size.Y / verticalFrames;
+		var X = size.X / horizontalFrames;
+
+		var top = Y * (frameY - 1);
+		var left = X * (frameX - 1);
+
+		return new(left / size.X, top / size.Y);
+	}
+
+	internal ImVec2 Uv1(int verticalFrames, int horizontalFrames, int frameX, int frameY)
+	{
+		var Y = size.Y / verticalFrames;
+		var X = size.X / horizontalFrames;
+
+		var bottom = Y * frameY;
+		var right = X * frameX;
+
+		return new(right / size.X, bottom / size.Y);
 	}
 }
