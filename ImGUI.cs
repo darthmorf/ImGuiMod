@@ -173,7 +173,8 @@ public class ImGUI : Mod
 
 	static void DebugWindow()
 	{
-		if (Main.gameMenu && !Config.DebugWindowInMainMenu) return;
+		if (Main.gameMenu && !ImGuiLoader.RenderDebugInMainMenu) return;
+		if (Main.gamePaused && !ImGuiLoader.RenderDebugInPause) return;
 		// show the logs
 		if(AppLog.ShowAppLog)
 		{

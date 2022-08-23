@@ -17,6 +17,11 @@ public abstract class ModImGui : ModType
 	/// Indicates that this gui should be rendered even in the main menu.
 	/// </summary>
 	public virtual bool RenderInMainMenu => false;
+
+	/// <summary>
+	/// Indicates that this gui should be rendered even in the game is paused.
+	/// </summary>
+	public virtual bool RenderInPause => false;
 	
 	internal ushort Index { get; set; }
 

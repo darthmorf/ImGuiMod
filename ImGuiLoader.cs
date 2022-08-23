@@ -6,7 +6,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
 // ReSharper disable InconsistentNaming
 
@@ -79,7 +78,11 @@ public static class ImGuiLoader
 			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
-	
+
+	internal static bool RenderDebugInPause => HookDebugGUI.arr.Any(x => guis[x].RenderInPause);
+
+	internal static bool RenderDebugInMainMenu => HookDebugGUI.arr.Any(x => guis[x].RenderInPause);
+
 	static readonly HookList HookOverlayGUI = AddHook<Action>(p => p.OverlayGUI);
 
 	/// <summary>
@@ -90,6 +93,7 @@ public static class ImGuiLoader
 		foreach (var gui in HookOverlayGUI.arr)
 		{
 			if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
+			if (Main.gamePaused && !guis[gui].RenderInPause) continue;
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 			guis[gui].OverlayGUI();
 			ImGuiIlEdit.CurrentModGui = null;
@@ -109,6 +113,7 @@ public static class ImGuiLoader
 			if (ImGUI.Visible || guis[gui].AlwaysVisible)
 			{
 				if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
+				if (Main.gamePaused && !guis[gui].RenderInPause) continue;
 				ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 				guis[gui].CustomGUI();
 				ImGuiIlEdit.CurrentModGui = null;

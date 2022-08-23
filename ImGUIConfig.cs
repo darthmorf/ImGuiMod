@@ -28,11 +28,6 @@ internal class ImGUIConfig : ModConfig
 	[Tooltip("Color Style of imgui gui")]
 	public ImGuiStyle Style;
 
-	[Label("Debug in Main Menu")]
-	[DefaultValue(false)]
-	[Tooltip("Render the debug window and all its nodes in the main menu")]
-	public bool DebugWindowInMainMenu;
-
 	[Header("ImGui dev")]
 	[Label("Metrics Window")]
 	[DefaultValue(false)]
