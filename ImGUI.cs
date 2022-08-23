@@ -206,6 +206,18 @@ public class ImGUI : Mod
 	private static unsafe void Image(IntPtr ptr, System.Numerics.Vector2 size, System.Numerics.Vector2 uv0, System.Numerics.Vector2 uv1)
 	{
 		var start = ImGui.GetCursorScreenPos();
+		var end = start + size;
+		var bb = new ImVec2[] { start, end };
+
+		ImGuiExNative.igItemSize_Rect(bb, 0);
+
+		if (!ImGuiExNative.igItemAdd(bb, 0))
+			return;
+
+		ImGui.GetWindowDrawList().AddImageRounded(ptr, start, end, uv0, uv1, 0xffffffff, 100);
+
+	}
+
 	static void DockSpace()
 	{
 		var viewport = ImGui.GetMainViewport();
