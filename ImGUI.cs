@@ -6,15 +6,11 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-
-[assembly: InternalsVisibleTo("DevTools")]
 
 namespace ImGUI;
 
@@ -366,9 +362,9 @@ public class ImGUI : Mod
 		style.Colors[(int)ImGuiCol.CheckMark] = new(0.90f, 0.90f, 0.90f, 0.50f);
 		style.Colors[(int)ImGuiCol.SliderGrab] = new(1.00f, 1.00f, 1.00f, 0.30f);
 		style.Colors[(int)ImGuiCol.SliderGrabActive] = new(0.41f, 0.39f, 0.80f, 0.60f);
-		style.Colors[(int)ImGuiCol.Button] = new(0.35f, 0.40f, 0.61f, 0.62f);
-		style.Colors[(int)ImGuiCol.ButtonHovered] = new(0.40f, 0.48f, 0.71f, 0.79f);
-		style.Colors[(int)ImGuiCol.ButtonActive] = new(0.46f, 0.54f, 0.80f, 1.00f);
+		style.Colors[(int)ImGuiCol.Button] = new(0.41f, 0.41f, 0.93f, 0.62f);
+		style.Colors[(int)ImGuiCol.ButtonHovered] = new(0.41f, 0.41f, 0.93f, 0.80f);
+		style.Colors[(int)ImGuiCol.ButtonActive] = new(0.43f, 0.43f, 0.93f, 1.00f);
 		style.Colors[(int)ImGuiCol.Header] = new(0.40f, 0.40f, 0.90f, 0.45f);
 		style.Colors[(int)ImGuiCol.HeaderHovered] = new(0.45f, 0.45f, 0.90f, 0.80f);
 		style.Colors[(int)ImGuiCol.HeaderActive] = new(0.53f, 0.53f, 0.87f, 0.80f);
@@ -380,8 +376,8 @@ public class ImGUI : Mod
 		style.Colors[(int)ImGuiCol.ResizeGripActive] = new(0.78f, 0.82f, 1.00f, 0.90f);
 		style.Colors[(int)ImGuiCol.Tab] = new(0.34f, 0.34f, 0.68f, 0.79f);
 		style.Colors[(int)ImGuiCol.TabHovered] = new(0.45f, 0.45f, 0.90f, 0.80f);
-		style.Colors[(int)ImGuiCol.TabActive] = new(0.40f, 0.40f, 0.73f, 0.84f);
-		style.Colors[(int)ImGuiCol.TabUnfocused] = new(0.28f, 0.28f, 0.57f, 0.82f);
+		style.Colors[(int)ImGuiCol.TabActive] = new(0.41f, 0.41f, 0.93f, 0.87f);
+		style.Colors[(int)ImGuiCol.TabUnfocused] = new(0.23f, 0.23f, 0.52f, 0.82f);
 		style.Colors[(int)ImGuiCol.TabUnfocusedActive] = new(0.35f, 0.35f, 0.65f, 0.84f);
 		style.Colors[(int)ImGuiCol.DockingPreview] = new(0.90f, 0.85f, 0.40f, 0.31f);
 		style.Colors[(int)ImGuiCol.DockingEmptyBg] = new(0.20f, 0.20f, 0.20f, 1.00f);
