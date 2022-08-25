@@ -4,10 +4,12 @@ using Terraria.ModLoader;
 
 namespace ImGUI;
 
-internal class InputHelper : ILoadable
+public class InputHelper : ILoadable
 {
-	internal static bool Hover;
-	internal static bool Text;
+	public static bool Hover;
+	public static bool Text;
+
+	public static bool PauseMenu => !Main.gameMenu && (Main.ingameOptionsWindow || Main.InGameUI.IsVisible);
 
 	public void Load(Mod mod)
 	{

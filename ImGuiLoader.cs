@@ -46,7 +46,7 @@ public static class ImGuiLoader
 			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
-
+	 
 	static readonly HookList HookBackgroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.BackgroundDraw);
 
 	/// <summary>
@@ -72,16 +72,16 @@ public static class ImGuiLoader
 	{
 		foreach (var gui in HookDebugGUI.arr)
 		{
+			if (!ImGui.CollapsingHeader(guis[gui].Mod.DisplayName)) continue;
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
-			if (!ImGui.CollapsingHeader(guis[gui].Mod.DisplayName)) return;
-				guis[gui].DebugGUI();
+			guis[gui].DebugGUI();
 			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
 
 	internal static bool RenderDebugInPause => HookDebugGUI.arr.Any(x => guis[x].RenderInPause);
 
-	internal static bool RenderDebugInMainMenu => HookDebugGUI.arr.Any(x => guis[x].RenderInPause);
+	internal static bool RenderDebugInMainMenu => HookDebugGUI.arr.Any(x => guis[x].RenderInMainMenu);
 
 	static readonly HookList HookOverlayGUI = AddHook<Action>(p => p.OverlayGUI);
 
@@ -93,7 +93,7 @@ public static class ImGuiLoader
 		foreach (var gui in HookOverlayGUI.arr)
 		{
 			if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
-			if (Main.gamePaused && !guis[gui].RenderInPause) continue;
+			if (InputHelper.PauseMenu && !guis[gui].RenderInPause) continue;
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 			guis[gui].OverlayGUI();
 			ImGuiIlEdit.CurrentModGui = null;
@@ -113,7 +113,7 @@ public static class ImGuiLoader
 			if (ImGUI.Visible || guis[gui].AlwaysVisible)
 			{
 				if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
-				if (Main.gamePaused && !guis[gui].RenderInPause) continue;
+				if (InputHelper.PauseMenu && !guis[gui].RenderInPause) continue;
 				ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 				guis[gui].CustomGUI();
 				ImGuiIlEdit.CurrentModGui = null;
