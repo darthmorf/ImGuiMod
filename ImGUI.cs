@@ -117,8 +117,9 @@ public class ImGUI : Mod
 		if (!Config.TerrariaMouse)
 			return;
 
-		PlayerInput.SetZoom_Unscaled();
-		Main.spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Matrix.Identity);
+		//PlayerInput.SetZoom_Unscaled();
+		PlayerInput.SetZoom_UI();
+		Main.spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Main.UIScaleMatrix);
 		Main.DrawCursor(Main.DrawThickCursor());
 		Main.spriteBatch.End();
 	}
