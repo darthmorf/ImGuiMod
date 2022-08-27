@@ -1,5 +1,6 @@
 displayName = ImGUI
 author = Kokopai
-version = 0.16.2
+version = 0.16.3
 dllReferences = ImGuiNET
 side = NoSync
+homepage = https://discord.gg/HcS724M5Ar

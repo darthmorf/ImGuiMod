@@ -2,6 +2,7 @@ using ImGUI.Internals;
 using ImGUI.Renderer;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
@@ -9,6 +10,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -112,9 +114,11 @@ public class ImGUI : Mod
 
 		// Call AfterLayout now to finish up and draw all the things
 		Renderer.AfterLayout();
-		if (!Config.TerrariaMouse || Main.gameMenu)
+		if (!Config.TerrariaMouse)
 			return;
-		Main.spriteBatch.Begin();
+
+		PlayerInput.SetZoom_Unscaled();
+		Main.spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Matrix.Identity);
 		Main.DrawCursor(Main.DrawThickCursor());
 		Main.spriteBatch.End();
 	}
@@ -159,8 +163,7 @@ public class ImGUI : Mod
 		var io = ImGui.GetIO();
 		InputHelper.Text = ImGui.IsAnyItemFocused() || io.WantTextInput;
 
-
-		if (!Config.TerrariaMouse || Main.gameMenu)
+		if (!Config.TerrariaMouse)
 			// show the mouse if is over a window
 			Main.instance.IsMouseVisible = InputHelper.Hover;
 	}
