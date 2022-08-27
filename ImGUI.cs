@@ -97,15 +97,19 @@ public class ImGUI : Mod
 
 	internal static void Main_DoDraw(On.Terraria.Main.orig_DoDraw orig, Main self, GameTime gameTime)
 	{
-		// render all terraria
-		orig(self, gameTime);
-
 		// Update current state in imgui
 		Renderer.BeforeLayout(gameTime);
 
 		// Draw our UI
 		ImGuiLayout();
-		
+
+		// render all terraria
+		orig(self, gameTime);
+
+		// draw raws
+		ImGuiLoader.BackgroundDraw(ImGui.GetBackgroundDrawList());
+		ImGuiLoader.ForeroundDraw(ImGui.GetForegroundDrawList());
+
 		// Call AfterLayout now to finish up and draw all the things
 		Renderer.AfterLayout();
 		if (!Config.TerrariaMouse || Main.gameMenu)
@@ -149,16 +153,10 @@ public class ImGUI : Mod
 				ImGui.ShowMetricsWindow(ref Config.ShowMetricsWindow); 
 			DebugWindow(); 
 		}
-
-		// draw raws
-		ImGuiLoader.BackgroundDraw(ImGui.GetBackgroundDrawList());
-		ImGuiLoader.ForeroundDraw(ImGui.GetForegroundDrawList());
-
 		
 		InputHelper.Hover = ImGui.IsAnyItemHovered() || ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.RootAndChildWindows | ImGuiHoveredFlags.RectOnly | ImGuiHoveredFlags.AllowWhenDisabled);
 
 		var io = ImGui.GetIO();
-
 		InputHelper.Text = ImGui.IsAnyItemFocused() || io.WantTextInput;
 
 
