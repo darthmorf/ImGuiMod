@@ -1,4 +1,4 @@
-using ImGUI.Internals;
+﻿using ImGUI.Internals;
 using ImGUI.Renderer;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
@@ -198,15 +198,16 @@ public class ImGUI : Mod
 		}
 		// only show fps on debug so that it is not empty
 		ImGui.TextWrapped($"Application average {1000f / ImGui.GetIO().Framerate:F3} ms/frame ({ImGui.GetIO().Framerate:F1} FPS)");
+		
 		ImGuiLoader.DebugGUI();
 		ImGui.End();
 	}
 
-	private static unsafe void Image(IntPtr ptr, System.Numerics.Vector2 size, System.Numerics.Vector2 uv0, System.Numerics.Vector2 uv1)
+	private static unsafe void Image(IntPtr ptr, Vector2 size, Vector2 uv0, Vector2 uv1)
 	{
 		var start = ImGui.GetCursorScreenPos();
 		var end = start + size;
-		var bb = new ImVec2[] { start, end };
+		var bb = new Vector2[] { start, end };
 
 		ImGuiExNative.igItemSize_Rect(bb, 0);
 
@@ -232,12 +233,12 @@ public class ImGUI : Mod
 		windowFlags |= ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
 		windowFlags |= ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration;
 
-		ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
+		ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
 		ImGui.Begin("DockSpace Main", windowFlags);
 		
 		// create de dockspace
 		var dockspaceId = ImGui.GetID("MainDockSpace");
-		ImGui.DockSpace(dockspaceId, System.Numerics.Vector2.Zero, dockspace_flags);
+		ImGui.DockSpace(dockspaceId, Vector2.Zero, dockspace_flags);
 
 		ImGui.End();
 	}

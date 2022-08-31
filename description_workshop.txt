@@ -1,4 +1,4 @@
-[h1]ImGUI[/h1]
+﻿[h1]ImGUI[/h1]
 
 A mod that allows you to use the graphical interface of [url=https://github.com/ocornut/imgui]Dear ImGui[/url] in terraria.
 

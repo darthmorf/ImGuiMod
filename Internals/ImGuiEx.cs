@@ -2,6 +2,7 @@
 using ImGUI.Internals;
 using System;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Terraria;
 
 namespace ImGuiNET;
@@ -68,7 +69,7 @@ public static class ImGuiEx
 		ImGui.Image(data.ptr, tsize, uv0, uv1);
 	}
 
-	public static void ImageFrame(IntPtr texture, ImVec2 size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
+	public static void ImageFrame(IntPtr texture, Vector2 size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
 	{
 		var tex = ImGUI.ImGUI.Renderer._loadedTextures[texture];
 		var data = new TextureData
@@ -80,7 +81,7 @@ public static class ImGuiEx
 		ImageFrame(data, verticalFrames, horizontalFrames, frameX, frameY);
 	}
 
-	public static void ImageFrame(TextureData data, ImVec2 size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
+	public static void ImageFrame(TextureData data, Vector2 size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
 	{
 		var uv0 = data.Uv0(verticalFrames, horizontalFrames, frameX, frameY);
 		var uv1 = data.Uv1(verticalFrames, horizontalFrames, frameX, frameY);

@@ -1,4 +1,4 @@
-ImGUI
+﻿ImGUI
 
 A mod that allows you to use the graphical interface of Dear ImGui in terraria.
 

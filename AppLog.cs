@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Numerics;
+using Microsoft.Xna.Framework;
 
 namespace ImGUI;
 
@@ -18,7 +18,7 @@ public static class AppLog
 	{
 		if (!ImGui.Begin("tMod Logs", ref ShowAppLog))
 			return;
-
+		
 		// Options menu
 		if (ImGui.BeginPopup("LogOptions"))
 		{
