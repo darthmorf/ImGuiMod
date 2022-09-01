@@ -15,6 +15,17 @@ public class InputHelper : ILoadable
 	{
 		if (!ImGUI.CanGui) return;
 		On.Terraria.GameInput.PlayerInput.UpdateInput += Updateinput;
+		On.Terraria.Main.DoUpdate_HandleInput += DoUpdate_HandleInput;
+	}
+
+	private void DoUpdate_HandleInput(On.Terraria.Main.orig_DoUpdate_HandleInput orig, Main self)
+	{
+		orig(self);
+		if (!ImGUI.Visible || !ImGUI.Config.PreventInteraction) return;
+		if (Text)
+		{
+			Main.keyState = new();
+		}
 	}
 
 	void Updateinput(On.Terraria.GameInput.PlayerInput.orig_UpdateInput orig)
@@ -43,17 +54,13 @@ public class InputHelper : ILoadable
 			}
 
 		}
-		// todo: prevent keyboard
-		if(Text)
-		{
-			Main.keyState = new();
-		}
 	}
 
 	public void Unload()
 	{
 		if (!ImGUI.CanGui) return;
 		On.Terraria.GameInput.PlayerInput.UpdateInput -= Updateinput;
+		On.Terraria.Main.DoUpdate_HandleInput -= DoUpdate_HandleInput;
 
 	}
 }
