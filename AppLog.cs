@@ -17,7 +17,10 @@ public static class AppLog
 	internal static void Show()
 	{
 		if (!ImGui.Begin("tMod Logs", ref ShowAppLog))
+		{
+			ImGui.End();
 			return;
+		}
 		
 		// Options menu
 		if (ImGui.BeginPopup("LogOptions"))

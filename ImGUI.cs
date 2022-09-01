@@ -76,12 +76,14 @@ public class ImGUI : Mod
 			Renderer = new(this);
 
 			var io = ImGui.GetIO();
-			io.Fonts.Clear();
 			var fontBytes = GetFileBytes("extras/FONT.TTF");
 			var pinnedArray = GCHandle.Alloc(fontBytes, GCHandleType.Pinned);
 			var pointer = pinnedArray.AddrOfPinnedObject();
-			io.Fonts.AddFontFromMemoryTTF(pointer, fontBytes.Length, 20);
-			
+			var terrariaFont = io.Fonts.AddFontFromMemoryTTF(pointer, fontBytes.Length, 20);
+			unsafe
+			{
+				io.NativePtr->FontDefault = terrariaFont.NativePtr;
+			}
 			Renderer.RebuildFontAtlas();
 
 			pinnedArray.Free();
@@ -141,10 +143,6 @@ public class ImGUI : Mod
 		// confiugre main dock area
 		DockSpace();
 
-		// todo: why dont work in normal style? something is setting padding to 0
-		var st = ImGui.GetStyle();
-		st.WindowPadding = new(10, 10);
-
 		// draw custom windows
 		ImGuiLoader.CustomGUI();
 		
@@ -159,7 +157,7 @@ public class ImGUI : Mod
 			DebugWindow(); 
 		}
 		
-		InputHelper.Hover = ImGui.IsAnyItemHovered() || ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.RootAndChildWindows | ImGuiHoveredFlags.RectOnly | ImGuiHoveredFlags.AllowWhenDisabled);
+		InputHelper.Hover = ImGui.IsAnyItemHovered() || ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.RootAndChildWindows | ImGuiHoveredFlags.AllowWhenBlockedByActiveItem | ImGuiHoveredFlags.AllowWhenBlockedByPopup);
 
 		var io = ImGui.GetIO();
 		InputHelper.Text = ImGui.IsAnyItemFocused() || io.WantTextInput;
@@ -179,8 +177,13 @@ public class ImGUI : Mod
 			AppLog.Show();
 		}
 
-		if (!Config.DebugWindow || !ImGui.Begin("Debug", ref Config.DebugWindow, ImGuiWindowFlags.MenuBar))
+		if (!Config.DebugWindow)
 			return;
+		if(!ImGui.Begin("Debug", ref Config.DebugWindow, ImGuiWindowFlags.MenuBar))
+		{
+			ImGui.End();
+			return;
+		}
 		
 		if (ImGui.BeginMenuBar())
 		{
@@ -241,6 +244,7 @@ public class ImGUI : Mod
 		ImGui.DockSpace(dockspaceId, Vector2.Zero, dockspace_flags);
 
 		ImGui.End();
+		ImGui.PopStyleVar();
 	}
 
 	static string GetNativePath()
