@@ -58,7 +58,7 @@ public class ImGUI : Mod
 		// configs
 		Config = ModContent.GetInstance<ImGUIConfig>();
 		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
-		ToggleImGui = KeybindLoader.RegisterKeybind(this, "Toggle ImGUI", Keys.F5);
+		ToggleImGui = KeybindLoader.RegisterKeybind(this, "Toggle ImGui", Keys.F5);
 		
 		ConfigureNative();
 

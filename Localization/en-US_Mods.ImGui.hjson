@@ -44,5 +44,5 @@ Configs: {
 
 Keybinds: {
 	"Debug Window.DisplayName": Toggle Debug Window
-	"Toggle ImGUI.DisplayName": Toggle ImGui
+	"Toggle ImGui.DisplayName": Toggle ImGui
 }
