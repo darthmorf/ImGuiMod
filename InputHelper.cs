@@ -33,11 +33,10 @@ public class InputHelper : ILoadable
 
 	void Updateinput(Terraria.GameInput.On_PlayerInput.orig_UpdateInput orig)
 	{
-		orig();
 
-        if (!ImGUI.Visible || ImGUI.Config == null || !ImGUI.Config.PreventInteraction) return;
+        if (!ImGUI.Visible || ImGUI.Config == null) return;
 
-		if (Hover)
+		if (Hover && ImGUI.Config.PreventInteraction)
 		{
 			Main.mouseLeft =
 			Main.mouseRight =
@@ -58,6 +57,10 @@ public class InputHelper : ILoadable
 			}
 
 		}
+		else
+		{
+            orig();
+        }
 	}
 
 	public void Unload()
