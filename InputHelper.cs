@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using System.Diagnostics;
+using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 
@@ -21,7 +22,9 @@ public class InputHelper : ILoadable
 	private void DoUpdate_HandleInput(Terraria.On_Main.orig_DoUpdate_HandleInput orig, Main self)
 	{
 		orig(self);
-		if (!ImGUI.Visible || !ImGUI.Config.PreventInteraction) return;
+
+		if (!ImGUI.Visible || ImGUI.Config == null || !ImGUI.Config.PreventInteraction) return;
+
 		if (Text)
 		{
 			Main.keyState = new();
@@ -31,7 +34,8 @@ public class InputHelper : ILoadable
 	void Updateinput(Terraria.GameInput.On_PlayerInput.orig_UpdateInput orig)
 	{
 		orig();
-		if (!ImGUI.Visible || !ImGUI.Config.PreventInteraction) return;
+
+        if (!ImGUI.Visible || ImGUI.Config == null || !ImGUI.Config.PreventInteraction) return;
 
 		if (Hover)
 		{
