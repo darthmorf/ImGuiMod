@@ -8,14 +8,14 @@ internal class GamePauseFix : ILoadable
 {
 	public void Load(Mod mod)
 	{
-		On.Terraria.Main.CanPauseGame += Main_CanPauseGame;
+		Terraria.On_Main.CanPauseGame += Main_CanPauseGame;
 	}
 
-	private bool Main_CanPauseGame(On.Terraria.Main.orig_CanPauseGame orig) =>
+	private bool Main_CanPauseGame(Terraria.On_Main.orig_CanPauseGame orig) =>
 		orig() || (Main.netMode == NetmodeID.SinglePlayer && Main.InGameUI.IsVisible && Main.InGameUI.CurrentState?.GetType()?.Name is "UIModConfig" or "UIModConfigList");
 
 	public void Unload()
 	{
-		On.Terraria.Main.CanPauseGame -= Main_CanPauseGame;
+		Terraria.On_Main.CanPauseGame -= Main_CanPauseGame;
 	}
 }

@@ -1,7 +1,10 @@
 ﻿using ImGuiNET;
 using MonoMod.RuntimeDetour.HookGen;
 using System;
+using System.Drawing;
 using System.Reflection;
+using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace ImGUI.Internals;
 
@@ -42,16 +45,16 @@ internal class ImGuiIlEdit
 		var imgui = typeof(ImGui);
 
 		begin1 = imgui.GetMethod("Begin", new Type[] { typeof(string) });
-		HookEndpointManager.Add<hook_Begin1>(begin1, Begin1);
+		MonoModHooks.Add(begin1, Begin1);
 
 		begin2 = imgui.GetMethod("Begin", new Type[] { typeof(string), typeof(bool).MakeByRefType() });
-		HookEndpointManager.Add<hook_Begin2>(begin2, Begin2);
+        MonoModHooks.Add(begin2, Begin2);
 
 		begin3 = imgui.GetMethod("Begin", new Type[] { typeof(string), typeof(ImGuiWindowFlags) });
-		HookEndpointManager.Add<hook_Begin3>(begin3, Begin3);
+        MonoModHooks.Add(begin3, Begin3);
 
 		begin4 = imgui.GetMethod("Begin", new Type[] { typeof(string), typeof(bool).MakeByRefType(), typeof(ImGuiWindowFlags) });
-		HookEndpointManager.Add<hook_Begin4>(begin4, Begin4);
+		MonoModHooks.Add(begin4, Begin4);
 
 	}
 
@@ -98,13 +101,6 @@ internal class ImGuiIlEdit
 
 	internal static void Revert()
 	{
-		HookEndpointManager.Remove<hook_Begin1>(begin1, Begin1);
-		begin1 = null;
-		HookEndpointManager.Remove<hook_Begin2>(begin2, Begin2);
-		begin2 = null;
-		HookEndpointManager.Remove<hook_Begin3>(begin3, Begin3);
-		begin3 = null;
-		HookEndpointManager.Remove<hook_Begin4>(begin4, Begin4);
-		begin4 = null;
+		// Hooks are now automatically unloaded when the mod is unloaded
 	}
 }

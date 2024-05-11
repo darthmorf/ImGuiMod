@@ -125,7 +125,7 @@ public static class ImGuiLoader
 	{
 		foreach (var hook in hooks)
 		{
-			hook.arr = guis.WhereMethodIsOverridden(hook.method).Select(p => (int)p.Index).ToArray();
+            hook.arr = guis.WhereMethodIsOverridden(g => g.SetStaticDefaults).Select(p => (int)p.Index).ToArray();
 		}
 	}
 

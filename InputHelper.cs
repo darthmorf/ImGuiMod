@@ -14,11 +14,11 @@ public class InputHelper : ILoadable
 	public void Load(Mod mod)
 	{
 		if (!ImGUI.CanGui) return;
-		On.Terraria.GameInput.PlayerInput.UpdateInput += Updateinput;
-		On.Terraria.Main.DoUpdate_HandleInput += DoUpdate_HandleInput;
+		Terraria.GameInput.On_PlayerInput.UpdateInput += Updateinput;
+		Terraria.On_Main.DoUpdate_HandleInput += DoUpdate_HandleInput;
 	}
 
-	private void DoUpdate_HandleInput(On.Terraria.Main.orig_DoUpdate_HandleInput orig, Main self)
+	private void DoUpdate_HandleInput(Terraria.On_Main.orig_DoUpdate_HandleInput orig, Main self)
 	{
 		orig(self);
 		if (!ImGUI.Visible || !ImGUI.Config.PreventInteraction) return;
@@ -28,7 +28,7 @@ public class InputHelper : ILoadable
 		}
 	}
 
-	void Updateinput(On.Terraria.GameInput.PlayerInput.orig_UpdateInput orig)
+	void Updateinput(Terraria.GameInput.On_PlayerInput.orig_UpdateInput orig)
 	{
 		orig();
 		if (!ImGUI.Visible || !ImGUI.Config.PreventInteraction) return;
@@ -59,8 +59,8 @@ public class InputHelper : ILoadable
 	public void Unload()
 	{
 		if (!ImGUI.CanGui) return;
-		On.Terraria.GameInput.PlayerInput.UpdateInput -= Updateinput;
-		On.Terraria.Main.DoUpdate_HandleInput -= DoUpdate_HandleInput;
+        Terraria.GameInput.On_PlayerInput.UpdateInput -= Updateinput;
+		Terraria.On_Main.DoUpdate_HandleInput -= DoUpdate_HandleInput;
 
 	}
 }

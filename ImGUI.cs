@@ -99,7 +99,7 @@ public class ImGUI : Mod
 		check.Close();
 	}
 
-	internal static void Main_DoDraw(On.Terraria.Main.orig_DoDraw orig, Main self, GameTime gameTime)
+	internal static void Main_DoDraw(Terraria.On_Main.orig_DoDraw orig, Main self, GameTime gameTime)
 	{
 		// Update current state in imgui
 		Renderer.BeforeLayout(gameTime);
@@ -289,7 +289,7 @@ public class ImGUI : Mod
 		Action a = () => {
 			if(current == null)
 				Main.menuMode = 0;
-			On.Terraria.Main.DoDraw += ImGUI.Main_DoDraw;
+            Terraria.On_Main.DoDraw += ImGUI.Main_DoDraw;
 		};
 
 		if (current == null)
@@ -303,7 +303,7 @@ public class ImGUI : Mod
 	{
 		if (!CanGui) return;
 		// stop drawing imgui
-		On.Terraria.Main.DoDraw -= Main_DoDraw;
+		Terraria.On_Main.DoDraw -= Main_DoDraw;
 		// reverts
 		ImGuiIlEdit.Revert();
 		_Imguiloaded = false;
