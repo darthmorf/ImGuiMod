@@ -38,7 +38,7 @@ public static class ImGuiLoader
 	/// </summary>
 	public static void ForeroundDraw(ImDrawListPtr drawList)
 	{
-		foreach (var gui in HookForeroundDraw.arr)
+		foreach (int gui in HookForeroundDraw.arr)
 		{
 			if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
@@ -54,7 +54,7 @@ public static class ImGuiLoader
 	/// </summary>
 	public static void BackgroundDraw(ImDrawListPtr drawList)
 	{
-		foreach (var gui in HookBackgroundDraw.arr)
+		foreach (int gui in HookBackgroundDraw.arr)
 		{
 			if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
@@ -70,7 +70,7 @@ public static class ImGuiLoader
 	/// </summary>
 	public static void DebugGUI()
 	{
-		foreach (var gui in HookDebugGUI.arr)
+		foreach (int gui in HookDebugGUI.arr)
 		{
 			if (!ImGui.CollapsingHeader(guis[gui].Mod.DisplayName)) continue;
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
@@ -90,7 +90,7 @@ public static class ImGuiLoader
 	/// </summary>
 	public static void OverlayGUI()
 	{
-		foreach (var gui in HookOverlayGUI.arr)
+		foreach (int gui in HookOverlayGUI.arr)
 		{
 			if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
 			if (InputHelper.PauseMenu && !guis[gui].RenderInPause) continue;
@@ -108,7 +108,7 @@ public static class ImGuiLoader
 	/// </summary>
 	public static void CustomGUI()
 	{
-		foreach (var gui in HookCustomGUI.arr)
+		foreach (int gui in HookCustomGUI.arr)
 		{
 			if (ImGUI.Visible || guis[gui].AlwaysVisible)
 			{
@@ -123,7 +123,7 @@ public static class ImGuiLoader
 
 	internal static void UpdateHooks()
 	{
-		foreach (var hook in hooks)
+		foreach (HookList hook in hooks)
 		{
             hook.arr = guis.WhereMethodIsOverridden(g => g.SetStaticDefaults).Select(p => (int)p.Index).ToArray();
 		}
@@ -131,7 +131,7 @@ public static class ImGuiLoader
 
 	static HookList AddHook<F>(Expression<Func<ModImGui, F>> func) where F : Delegate
 	{
-		var hook = new HookList(func.ToMethodInfo());
+        HookList hook = new HookList(func.ToMethodInfo());
 
 		hooks.Add(hook);
 

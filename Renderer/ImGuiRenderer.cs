@@ -86,15 +86,15 @@ public class ImGuiRenderer
 	public virtual unsafe void RebuildFontAtlas()
 	{
 		// Get font texture from ImGui
-		var io = ImGui.GetIO();
-		io.Fonts.GetTexDataAsRGBA32(out byte* pixelData, out var width, out var height, out var bytesPerPixel);
+		ImGuiIOPtr io = ImGui.GetIO();
+		io.Fonts.GetTexDataAsRGBA32(out byte* pixelData, out Int32 width, out Int32 height, out int bytesPerPixel);
 
 		// Copy the data to a managed array
-		var pixels = new byte[width * height * bytesPerPixel];
+		byte[] pixels = new byte[width * height * bytesPerPixel];
 		unsafe { Marshal.Copy(new(pixelData), pixels, 0, pixels.Length); }
 
-		// Create and register the texture as an XNA texture
-		var tex2d = new Texture2D(_graphicsDevice, width, height, false, SurfaceFormat.Color);
+        // Create and register the texture as an XNA texture
+        Texture2D tex2d = new Texture2D(_graphicsDevice, width, height, false, SurfaceFormat.Color);
 		tex2d.SetData(pixels);
 
 		// Should a texture already have been build previously, unbind it first so it can be deallocated
@@ -113,7 +113,7 @@ public class ImGuiRenderer
 	/// </summary>
 	public virtual IntPtr BindTexture(Texture2D texture)
 	{
-		var id = new IntPtr(_textureId++);
+		nint id = new IntPtr(_textureId++);
 
 		_loadedTextures.Add(id, texture);
 
@@ -159,7 +159,7 @@ public class ImGuiRenderer
 	/// </summary>
 	protected virtual void SetupInput()
 	{
-		var io = ImGui.GetIO();
+        ImGuiIOPtr io = ImGui.GetIO();
 
 		_keys.Add(io.KeyMap[(int)ImGuiKey.Tab] = (int)Keys.Tab);
 		_keys.Add(io.KeyMap[(int)ImGuiKey.LeftArrow] = (int)Keys.Left);
@@ -212,8 +212,8 @@ public class ImGuiRenderer
 	protected virtual Effect UpdateEffect(Texture2D texture)
 	{
 		_effect ??= new(_graphicsDevice);
-		
-		var io = ImGui.GetIO();
+
+        ImGuiIOPtr io = ImGui.GetIO();
 
 		_effect.World = Matrix.Identity;
 		_effect.View = Matrix.Identity;
@@ -230,12 +230,12 @@ public class ImGuiRenderer
 	/// </summary>
 	protected virtual void UpdateInput()
 	{
-		var io = ImGui.GetIO();
+		ImGuiIOPtr io = ImGui.GetIO();
 
-		var mouse = Mouse.GetState();
-		var keyboard = Keyboard.GetState();
+        MouseState mouse = Mouse.GetState();
+        KeyboardState keyboard = Keyboard.GetState();
 
-		for (var i = 0; i < _keys.Count; i++)
+		for (int i = 0; i < _keys.Count; i++)
 		{
 			io.KeysDown[_keys[i]] = keyboard.IsKeyDown((Keys)_keys[i]);
 		}
@@ -254,7 +254,7 @@ public class ImGuiRenderer
 		io.MouseDown[1] = mouse.RightButton == ButtonState.Pressed;
 		io.MouseDown[2] = mouse.MiddleButton == ButtonState.Pressed;
 
-		var scrollDelta = mouse.ScrollWheelValue - _scrollWheelValue;
+        int scrollDelta = mouse.ScrollWheelValue - _scrollWheelValue;
 		io.MouseWheel = scrollDelta > 0 ? 1 : scrollDelta < 0 ? -1 : 0;
 		_scrollWheelValue = mouse.ScrollWheelValue;
 	}
@@ -268,9 +268,9 @@ public class ImGuiRenderer
 	/// </summary>
 	void RenderDrawData(ImDrawDataPtr drawData)
 	{
-		// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, vertex/texcoord/color pointers
-		var lastViewport = _graphicsDevice.Viewport;
-		var lastScissorBox = _graphicsDevice.ScissorRectangle;
+        // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, vertex/texcoord/color pointers
+        Viewport lastViewport = _graphicsDevice.Viewport;
+        Rectangle lastScissorBox = _graphicsDevice.ScissorRectangle;
 
 		_graphicsDevice.BlendFactor = Color.White;
 		_graphicsDevice.BlendState = BlendState.NonPremultiplied;
@@ -320,13 +320,13 @@ public class ImGuiRenderer
 			Mod.Logger.Info($"Resize index buffer to {_indexBufferSize}");
 		}
 
-		// Copy ImGui's vertices and indices to a set of managed byte arrays
-		var vtxOffset = 0;
-		var idxOffset = 0;
+        // Copy ImGui's vertices and indices to a set of managed byte arrays
+        int vtxOffset = 0;
+        int idxOffset = 0;
 
-		for (var n = 0; n < drawData.CmdListsCount; n++)
+		for (int n = 0; n < drawData.CmdListsCount; n++)
 		{
-			var cmdList = drawData.CmdListsRange[n];
+            ImDrawListPtr cmdList = drawData.CmdListsRange[n];
 
 			fixed (void* vtxDstPtr = &_vertexData[vtxOffset * DrawVertDeclaration.Size])
 			fixed (void* idxDstPtr = &_indexData[idxOffset * sizeof(ushort)])
@@ -349,16 +349,16 @@ public class ImGuiRenderer
 		_graphicsDevice.SetVertexBuffer(_vertexBuffer);
 		_graphicsDevice.Indices = _indexBuffer;
 
-		var vtxOffset = 0;
-		var idxOffset = 0;
+        int vtxOffset = 0;
+        int idxOffset = 0;
 
-		for (var n = 0; n < drawData.CmdListsCount; n++)
+		for (int n = 0; n < drawData.CmdListsCount; n++)
 		{
-			var cmdList = drawData.CmdListsRange[n];
+            ImDrawListPtr cmdList = drawData.CmdListsRange[n];
 
-			for (var cmdi = 0; cmdi < cmdList.CmdBuffer.Size; cmdi++)
+			for (int cmdi = 0; cmdi < cmdList.CmdBuffer.Size; cmdi++)
 			{
-				var drawCmd = cmdList.CmdBuffer[cmdi];
+                ImDrawCmdPtr drawCmd = cmdList.CmdBuffer[cmdi];
 
 				if (drawCmd.ElemCount == 0)
 				{
@@ -377,9 +377,9 @@ public class ImGuiRenderer
 					(int)(drawCmd.ClipRect.W - drawCmd.ClipRect.Y)
 				);
 
-				var effect = UpdateEffect(_loadedTextures[drawCmd.TextureId]);
+                Effect effect = UpdateEffect(_loadedTextures[drawCmd.TextureId]);
 
-				foreach (var pass in effect.CurrentTechnique.Passes)
+				foreach (EffectPass pass in effect.CurrentTechnique.Passes)
 				{
 					pass.Apply();
 

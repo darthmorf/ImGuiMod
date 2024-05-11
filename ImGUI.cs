@@ -66,8 +66,8 @@ public class ImGUI : Mod
 		log4net.Config.BasicConfigurator.Configure(new ImGuiAppender());
 
 		ImGuiIlEdit.Apply();
-		
-		var check = new AutoResetEvent(false);
+
+        AutoResetEvent check = new AutoResetEvent(false);
 
 		//  execute in main thread to RebuildFontAtlas, background threads cant build font atlas
 		Main.RunOnMainThread(() =>
@@ -75,11 +75,11 @@ public class ImGUI : Mod
 			// create and configure the renderer
 			Renderer = new(this);
 
-			var io = ImGui.GetIO();
-			var fontBytes = GetFileBytes("extras/FONT.TTF");
-			var pinnedArray = GCHandle.Alloc(fontBytes, GCHandleType.Pinned);
-			var pointer = pinnedArray.AddrOfPinnedObject();
-			var terrariaFont = io.Fonts.AddFontFromMemoryTTF(pointer, fontBytes.Length, 20);
+            ImGuiIOPtr io = ImGui.GetIO();
+            byte[] fontBytes = GetFileBytes("extras/FONT.TTF");
+            GCHandle pinnedArray = GCHandle.Alloc(fontBytes, GCHandleType.Pinned);
+			nint pointer = pinnedArray.AddrOfPinnedObject();
+            ImFontPtr terrariaFont = io.Fonts.AddFontFromMemoryTTF(pointer, fontBytes.Length, 20);
 			unsafe
 			{
 				io.NativePtr->FontDefault = terrariaFont.NativePtr;
@@ -159,7 +159,7 @@ public class ImGUI : Mod
 		
 		InputHelper.Hover = ImGui.IsAnyItemHovered() || ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.RootAndChildWindows | ImGuiHoveredFlags.AllowWhenBlockedByActiveItem | ImGuiHoveredFlags.AllowWhenBlockedByPopup);
 
-		var io = ImGui.GetIO();
+        ImGuiIOPtr io = ImGui.GetIO();
 		InputHelper.Text = ImGui.IsAnyItemFocused() || io.WantTextInput;
 
 		if (!Config.TerrariaMouse)
@@ -208,9 +208,9 @@ public class ImGUI : Mod
 
 	private static unsafe void Image(IntPtr ptr, Vector2 size, Vector2 uv0, Vector2 uv1)
 	{
-		var start = ImGui.GetCursorScreenPos();
-		var end = start + size;
-		var bb = new Vector2[] { start, end };
+        Vector2 start = ImGui.GetCursorScreenPos();
+        Vector2 end = start + size;
+        Vector2[] bb = new Vector2[] { start, end };
 
 		ImGuiExNative.igItemSize_Rect(bb, 0);
 
@@ -223,11 +223,11 @@ public class ImGUI : Mod
 
 	static void DockSpace()
 	{
-		var viewport = ImGui.GetMainViewport();
-		// dont allow docks in center and make background inivisible.
-		var dockspace_flags = ImGuiDockNodeFlags.PassthruCentralNode | ImGuiDockNodeFlags.NoDockingInCentralNode;
-		// the window itself is cand be docked, obvius.
-		var windowFlags = ImGuiWindowFlags.NoDocking;
+        ImGuiViewportPtr viewport = ImGui.GetMainViewport();
+        // dont allow docks in center and make background inivisible.
+        ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags.PassthruCentralNode | ImGuiDockNodeFlags.NoDockingInCentralNode;
+        // the window itself is cand be docked, obvius.
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoDocking;
 		ImGui.SetNextWindowPos(UseWorkArea ? viewport.WorkPos : viewport.Pos);
 		ImGui.SetNextWindowSize(UseWorkArea ? viewport.WorkSize : viewport.Size);
 		ImGui.SetNextWindowViewport(viewport.ID);
@@ -238,9 +238,9 @@ public class ImGUI : Mod
 
 		ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
 		ImGui.Begin("DockSpace Main", windowFlags);
-		
-		// create de dockspace
-		var dockspaceId = ImGui.GetID("MainDockSpace");
+
+        // create de dockspace
+        uint dockspaceId = ImGui.GetID("MainDockSpace");
 		ImGui.DockSpace(dockspaceId, Vector2.Zero, dockspace_flags);
 
 		ImGui.End();
@@ -260,8 +260,8 @@ public class ImGUI : Mod
 
 	void ConfigureNative()
 	{
-		// make ImGui resolve the native with a custom resolver
-		var nativeByte = GetFileBytes(Path.Combine("lib", GetNativePath()));
+        // make ImGui resolve the native with a custom resolver
+        byte[] nativeByte = GetFileBytes(Path.Combine("lib", GetNativePath()));
 		File.WriteAllBytes(CimguiPath, nativeByte);
 		NativeLibrary.SetDllImportResolver(typeof(ImGui).Assembly, NativeResolver);
 		NativeLibrary.SetDllImportResolver(typeof(ImGUI).Assembly, NativeResolver);
@@ -283,9 +283,9 @@ public class ImGUI : Mod
 		ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 		_Imguiloaded = true;
 
-		var modloader = typeof(ModLoader);
-		var onload = modloader.GetField("OnSuccessfulLoad", BindingFlags.NonPublic | BindingFlags.Static);
-		var current = (Action)onload.GetValue(null);
+        Type modloader = typeof(ModLoader);
+        FieldInfo onload = modloader.GetField("OnSuccessfulLoad", BindingFlags.NonPublic | BindingFlags.Static);
+        Action current = (Action)onload.GetValue(null);
 		Action a = () => {
 			if(current == null)
 				Main.menuMode = 0;
@@ -335,7 +335,7 @@ public class ImGUI : Mod
 				ImGui.StyleColorsLight();
 				break;
 		}
-		var st = ImGui.GetStyle();
+        ImGuiStylePtr st = ImGui.GetStyle();
 		st.FrameRounding = 9;
 		st.TabBorderSize = 1;
 		st.WindowRounding = 6;
@@ -347,7 +347,7 @@ public class ImGUI : Mod
 
 	static void SetTerrariaStyle()
 	{
-		var style = ImGui.GetStyle();
+        ImGuiStylePtr style = ImGui.GetStyle();
 		style.Colors[(int)ImGuiCol.Text] = new(0.90f, 0.90f, 0.90f, 1.00f);
 		style.Colors[(int)ImGuiCol.TextDisabled] = new(0.60f, 0.60f, 0.60f, 1.00f);
 		style.Colors[(int)ImGuiCol.WindowBg] = new(0.27f, 0.29f, 0.53f, 0.78f);

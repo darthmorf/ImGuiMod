@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ImGuiNET;
 
@@ -25,7 +26,7 @@ public static class ImGuiEx
 
 			if (num <= Util.StackAllocationSizeLimit)
 			{
-				var stac = stackalloc byte[num + 1];
+				byte* stac = stackalloc byte[num + 1];
 				ptr = stac;
 			}
 			else
@@ -51,8 +52,8 @@ public static class ImGuiEx
 
 	public static void ImageFrame(IntPtr texture, float size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
 	{
-		var tex = ImGUI.ImGUI.Renderer._loadedTextures[texture];
-		var data = new TextureData
+		Texture2D tex = ImGUI.ImGUI.Renderer._loadedTextures[texture];
+        TextureData data = new TextureData
 		{
 			ptr = texture,
 			size = tex.Size(),
@@ -63,16 +64,16 @@ public static class ImGuiEx
 
 	public static void ImageFrame(TextureData data, float size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
 	{
-		var tsize = data.Transform(size, verticalFrames, horizontalFrames);
-		var uv0 = data.Uv0(verticalFrames, horizontalFrames, frameX, frameY);
-		var uv1 = data.Uv1(verticalFrames, horizontalFrames, frameX, frameY);
+		Vector2 tsize = data.Transform(size, verticalFrames, horizontalFrames);
+        Vector2 uv0 = data.Uv0(verticalFrames, horizontalFrames, frameX, frameY);
+        Vector2 uv1 = data.Uv1(verticalFrames, horizontalFrames, frameX, frameY);
 		ImGui.Image(data.ptr, tsize, uv0, uv1);
 	}
 
 	public static void ImageFrame(IntPtr texture, Vector2 size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
 	{
-		var tex = ImGUI.ImGUI.Renderer._loadedTextures[texture];
-		var data = new TextureData
+        Texture2D tex = ImGUI.ImGUI.Renderer._loadedTextures[texture];
+        TextureData data = new TextureData
 		{
 			ptr = texture,
 			size = tex.Size(),
@@ -83,8 +84,8 @@ public static class ImGuiEx
 
 	public static void ImageFrame(TextureData data, Vector2 size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
 	{
-		var uv0 = data.Uv0(verticalFrames, horizontalFrames, frameX, frameY);
-		var uv1 = data.Uv1(verticalFrames, horizontalFrames, frameX, frameY);
+        Vector2 uv0 = data.Uv0(verticalFrames, horizontalFrames, frameX, frameY);
+        Vector2 uv1 = data.Uv1(verticalFrames, horizontalFrames, frameX, frameY);
 		ImGui.Image(data.ptr, size, uv0, uv1);
 	}
 

@@ -33,9 +33,9 @@ public static class AppLog
 			ImGui.OpenPopup("LogOptions");
 
 		ImGui.SameLine();
-		var clear = ImGui.Button("Clear");
+        bool clear = ImGui.Button("Clear");
 		ImGui.SameLine();
-		var copy = ImGui.Button("Copy");
+        bool copy = ImGui.Button("Copy");
 
 		ImGui.Separator();
 		ImGui.BeginChild("scrolling", Vector2.Zero, false, ImGuiWindowFlags.HorizontalScrollbar);
@@ -47,7 +47,7 @@ public static class AppLog
 
 		ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
 
-		foreach (var log in Logs.ToArray())
+		foreach (string log in Logs.ToArray())
 		{
 			ImGui.TextUnformatted(log);
 		}

@@ -42,7 +42,7 @@ internal class ImGuiIlEdit
 
 	internal static void Apply()
 	{
-		var imgui = typeof(ImGui);
+		Type imgui = typeof(ImGui);
 
 		begin1 = imgui.GetMethod("Begin", new Type[] { typeof(string) });
 		MonoModHooks.Add(begin1, Begin1);
@@ -84,8 +84,8 @@ internal class ImGuiIlEdit
 
 	private static void ChangeLabel(ref string label)
 	{
-		var str = NextWindowAnimatedTitle ? "###" : "##";
-		var modname = string.IsNullOrWhiteSpace(CurrentModGui) ? "ImGUI" : CurrentModGui;
+		string str = NextWindowAnimatedTitle ? "###" : "##";
+        string modname = string.IsNullOrWhiteSpace(CurrentModGui) ? "ImGUI" : CurrentModGui;
 
 		if (!string.IsNullOrWhiteSpace(NextWindowID))
 			modname = NextWindowID;

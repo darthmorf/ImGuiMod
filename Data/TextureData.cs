@@ -28,8 +28,8 @@ public struct TextureData
 	/// <returns>The scaled values to fit the square image.</returns>
 	public Vector2 Transform(float tsize)
 	{
-		var Y = size.Y / frames;
-		var X = size.X;
+		float Y = size.Y / frames;
+        float X = size.X;
 		if (X == Y)
 		{
 			return new(tsize, tsize);
@@ -49,7 +49,7 @@ public struct TextureData
 	/// <returns>The uv required to display this frame.</returns>
 	public Vector2 Uv0(int frame)
 	{
-		var Y = size.Y / frames;
+        float Y = size.Y / frames;
 		return new(0, Y * (frame - 1) / size.Y);
 	}
 
@@ -60,14 +60,14 @@ public struct TextureData
 	/// <returns>The uv required to display this frame.</returns>
 	public Vector2 Uv1(int frame)
 	{
-		var Y = size.Y / frames;
+		float Y = size.Y / frames;
 		return new(1, Y * frame / size.Y);
 	}
 
 	internal Vector2 Transform(float tsize, int verticalFrames = 1, int horizontalFrames = 1)
 	{
-		var Y = size.Y / verticalFrames;
-		var X = size.X / horizontalFrames;
+		float Y = size.Y / verticalFrames;
+		float X = size.X / horizontalFrames;
 		if (X == Y)
 		{
 			return new(tsize, tsize);
@@ -81,22 +81,22 @@ public struct TextureData
 
 	internal Vector2 Uv0(int verticalFrames, int horizontalFrames, int frameX, int frameY)
 	{
-		var Y = size.Y / verticalFrames;
-		var X = size.X / horizontalFrames;
+		float Y = size.Y / verticalFrames;
+        float X = size.X / horizontalFrames;
 
-		var top = Y * (frameY - 1);
-		var left = X * (frameX - 1);
+		float top = Y * (frameY - 1);
+		float left = X * (frameX - 1);
 
 		return new(left / size.X, top / size.Y);
 	}
 
 	internal Vector2 Uv1(int verticalFrames, int horizontalFrames, int frameX, int frameY)
 	{
-		var Y = size.Y / verticalFrames;
-		var X = size.X / horizontalFrames;
+		float Y = size.Y / verticalFrames;
+		float X = size.X / horizontalFrames;
 
-		var bottom = Y * frameY;
-		var right = X * frameX;
+		float bottom = Y * frameY;
+		float right = X * frameX;
 
 		return new(right / size.X, bottom / size.Y);
 	}

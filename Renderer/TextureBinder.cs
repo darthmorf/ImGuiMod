@@ -76,10 +76,10 @@ public class TextureBinder
 	{
 		if (binds[type].ptr != IntPtr.Zero)
 			ImGUI.Renderer.UnbindTexture(binds[type].ptr);
-		var asset = source[type];
+        Asset<Texture2D> asset = source[type];
 		if (!asset.IsLoaded)
 			Main.Assets.Request<Texture2D>(asset.Name, AssetRequestMode.ImmediateLoad);
-		var texture = asset.Value;
+        Texture2D texture = asset.Value;
 		binds[type] = new()
 		{
 			ptr = ImGUI.Renderer.BindTexture(texture),
