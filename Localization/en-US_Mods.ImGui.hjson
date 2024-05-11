@@ -1,0 +1,48 @@
+Configs: {
+	ImGUIConfig: {
+		ShowMetricsWindow: {
+			Tooltip: ""
+			Label: Show Metrics Window
+		}
+
+		Headers: {
+			MetricsWindow.Header: Metrics Window Settings
+			DebugWindow.Header: Debug Window Settings
+		}
+
+		Style: {
+			Tooltip: Color Style of ImGui GUI
+			Label: Style
+		}
+
+		PreventInteraction: {
+			Tooltip: Prevents iterations with the world behind ImGui, for example if you scroll in ImGui it doesn't change your selected item
+			Label: Prevent Interaction
+		}
+
+		TerrariaMouse: {
+			Tooltip: Use the Terraria mouse in ImGui instead of normal mouse
+			Label: Terraria Mouse
+		}
+
+		DebugWindow: {
+			Tooltip: Show debug window
+			Label: Debug Window
+		}
+
+		DisplayName: ImGui Config
+	}
+
+	ImGuiStyle: {
+		Light.Label: Light
+		Dark.Label: Dark
+		Classic.Label: Classic
+		Terraria.Label: Terraria
+		Tooltip: ""
+	}
+}
+
+Keybinds: {
+	"Debug Window.DisplayName": Toggle Debug Window
+	"Toggle ImGUI.DisplayName": Toggle ImGui
+}
