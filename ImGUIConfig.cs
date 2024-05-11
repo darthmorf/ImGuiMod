@@ -26,6 +26,6 @@ internal class ImGUIConfig : ModConfig
 
 	public override void OnChanged()
 	{
-		ImGUI.UpdateStyle(Style);
+		ImGUI.SetWindowStyle(Style);
 	}
 }

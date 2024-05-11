@@ -92,8 +92,8 @@ public class ImGUI : Mod
 
 			check.Set();
 
-			// initial style, can be moved?
-			UpdateStyle(Config.Style);
+            // initial style, can be moved?
+            SetWindowStyle(Config.Style);
 		});
 		check.WaitOne();
 		check.Close();
@@ -105,7 +105,7 @@ public class ImGUI : Mod
 		Renderer.BeforeLayout(gameTime);
 
 		// Draw our UI
-		ImGuiLayout();
+		DrawImGui();
 
 		// render all terraria
 		orig(self, gameTime);
@@ -138,10 +138,10 @@ public class ImGUI : Mod
 	// always true
 	const bool UseWorkArea = true;
 
-	static void ImGuiLayout()
+	static void DrawImGui()
 	{
-		// confiugre main dock area
-		DockSpace();
+		// configure main dock area
+		CreateMainDockableArea();
 
 		// draw custom windows
 		ImGuiLoader.CustomGUI();
@@ -149,61 +149,16 @@ public class ImGUI : Mod
 		// draw always visible windows
 		ImGuiLoader.OverlayGUI();
 
-		//draw debug window
-		if (Visible)
-		{
-			if(Config.ShowMetricsWindow)
-				ImGui.ShowMetricsWindow(ref Config.ShowMetricsWindow); 
-			DebugWindow(); 
-		}
-		
-		InputHelper.Hover = ImGui.IsAnyItemHovered() || ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.RootAndChildWindows | ImGuiHoveredFlags.AllowWhenBlockedByActiveItem | ImGuiHoveredFlags.AllowWhenBlockedByPopup);
+		ImGui.ShowDemoWindow();
+
+        InputHelper.ImGuiHasHover = ImGui.IsAnyItemHovered() || ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.RootAndChildWindows | ImGuiHoveredFlags.AllowWhenBlockedByActiveItem | ImGuiHoveredFlags.AllowWhenBlockedByPopup);
 
         ImGuiIOPtr io = ImGui.GetIO();
 		InputHelper.Text = ImGui.IsAnyItemFocused() || io.WantTextInput;
 
 		if (!Config.TerrariaMouse)
 			// show the mouse if is over a window
-			Main.instance.IsMouseVisible = InputHelper.Hover;
-	}
-
-	static void DebugWindow()
-	{
-		if (Main.gameMenu && !ImGuiLoader.RenderDebugInMainMenu) return;
-		if (InputHelper.PauseMenu && !ImGuiLoader.RenderDebugInPause) return;
-		// show the logs
-		if(AppLog.ShowAppLog)
-		{
-			AppLog.Show();
-		}
-
-		if (!Config.DebugWindow)
-			return;
-		if(!ImGui.Begin("Debug", ref Config.DebugWindow, ImGuiWindowFlags.MenuBar))
-		{
-			ImGui.End();
-			return;
-		}
-		
-		if (ImGui.BeginMenuBar())
-		{
-			if (ImGui.BeginMenu("Options"))
-			{
-				ImGui.MenuItem("Log", null, ref AppLog.ShowAppLog);
-					
-				if (ImGui.MenuItem("Close"))
-				{
-					Config.DebugWindow = false;
-				}
-				ImGui.EndMenu();
-			}
-			ImGui.EndMenuBar();
-		}
-		// only show fps on debug so that it is not empty
-		ImGui.TextWrapped($"Application average {1000f / ImGui.GetIO().Framerate:F3} ms/frame ({ImGui.GetIO().Framerate:F1} FPS)");
-		
-		ImGuiLoader.DebugGUI();
-		ImGui.End();
+			Main.instance.IsMouseVisible = InputHelper.ImGuiHasHover;
 	}
 
 	private static unsafe void Image(IntPtr ptr, Vector2 size, Vector2 uv0, Vector2 uv1)
@@ -221,12 +176,12 @@ public class ImGUI : Mod
 
 	}
 
-	static void DockSpace()
+	static void CreateMainDockableArea()
 	{
         ImGuiViewportPtr viewport = ImGui.GetMainViewport();
-        // dont allow docks in center and make background inivisible.
+        // dont allow docks in center and make background invisible.
         ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags.PassthruCentralNode | ImGuiDockNodeFlags.NoDockingInCentralNode;
-        // the window itself is cand be docked, obvius.
+        // the window itself is cand be docked
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoDocking;
 		ImGui.SetNextWindowPos(UseWorkArea ? viewport.WorkPos : viewport.Pos);
 		ImGui.SetNextWindowSize(UseWorkArea ? viewport.WorkSize : viewport.Size);
@@ -239,7 +194,7 @@ public class ImGUI : Mod
 		ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
 		ImGui.Begin("DockSpace Main", windowFlags);
 
-        // create de dockspace
+        // create the dockspace
         uint dockspaceId = ImGui.GetID("MainDockSpace");
 		ImGui.DockSpace(dockspaceId, Vector2.Zero, dockspace_flags);
 
@@ -317,7 +272,7 @@ public class ImGUI : Mod
 			File.Delete(CimguiPath);
 	}
 
-	internal static void UpdateStyle(ImGuiStyle style)
+	internal static void SetWindowStyle(ImGuiStyle style)
 	{
 		if (!_Imguiloaded) return;
 		switch (style)
@@ -335,6 +290,7 @@ public class ImGUI : Mod
 				ImGui.StyleColorsLight();
 				break;
 		}
+
         ImGuiStylePtr st = ImGui.GetStyle();
 		st.FrameRounding = 9;
 		st.TabBorderSize = 1;

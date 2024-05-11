@@ -7,7 +7,7 @@ namespace ImGUI;
 
 public class InputHelper : ILoadable
 {
-	public static bool Hover;
+	public static bool ImGuiHasHover;
 	public static bool Text;
 
 	public static bool PauseMenu => !Main.gameMenu && (Main.ingameOptionsWindow || Main.InGameUI.IsVisible);
@@ -36,7 +36,7 @@ public class InputHelper : ILoadable
 
         if (!ImGUI.Visible || ImGUI.Config == null) return;
 
-		if (Hover && ImGUI.Config.PreventInteraction)
+		if (ImGuiHasHover && ImGUI.Config.PreventInteraction)
 		{
 			Main.mouseLeft =
 			Main.mouseRight =
