@@ -50,9 +50,14 @@ namespace ImGuiExample
 
         public override void StandardDraw()
         {
+            ImGuiIOPtr io = ImGui.GetIO();
+            ImGui.PushFont(ImGUIMod.defaultFont);
+
             ImGui.Begin("D:");
             ImGui.Text("Traditional style");
             ImGui.End();
+
+            ImGui.PopFont();
         }
     }
 

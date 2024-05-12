@@ -183,8 +183,6 @@ public class ImGuiRenderer
 		_keys.Add(io.KeyMap[(int)ImGuiKey.Z] = (int)Keys.Z);
 
 		TextInputEXT.TextInput += sendTextuImput;
-
-		ImGui.GetIO().Fonts.AddFontDefault();
 	}
 
 	void sendTextuImput(char c)

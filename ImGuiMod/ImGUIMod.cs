@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -13,6 +14,7 @@ using Terraria;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ImGuiMod;
 
@@ -43,8 +45,18 @@ public class ImGUIMod : Mod
 	/// </summary>
 	public static bool CanGui => !Main.dedServ && Main.netMode != NetmodeID.Server;
 
-	/// <inheritdoc/>
-	public override void Load()
+    /// <summary>
+    /// Terraria (Andy MT Bold Font)
+    /// </summary
+    public static ImFontPtr terrariaFont;
+
+    /// <summary>
+    /// ImGui default font (ProggyClean)
+    /// </summary
+    public static ImFontPtr defaultFont;
+
+    /// <inheritdoc/>
+    public override void Load()
 	{
 		if (!CanGui) return;
 		// configs
@@ -66,14 +78,22 @@ public class ImGUIMod : Mod
 			Renderer = new(this);
 
             ImGuiIOPtr io = ImGui.GetIO();
-            byte[] fontBytes = GetFileBytes("extras/FONT.TTF");
+            byte[] fontBytes = GetFileBytes("extras/AndyMTBold.TTF");
             GCHandle pinnedArray = GCHandle.Alloc(fontBytes, GCHandleType.Pinned);
 			nint pointer = pinnedArray.AddrOfPinnedObject();
-            ImFontPtr terrariaFont = io.Fonts.AddFontFromMemoryTTF(pointer, fontBytes.Length, 20);
-			unsafe
-			{
+            unsafe
+            {
+                ImFontConfig config = *ImGuiNative.ImFontConfig_ImFontConfig();
+                byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("Andy MT Bold"); // String max length == 40
+                fixed (byte* fontName = byteArray)
+				{
+                    Marshal.Copy(byteArray, 0, (nint)config.Name, byteArray.Length);
+                }
+
+				defaultFont = io.Fonts.AddFontDefault();
+                terrariaFont = io.Fonts.AddFontFromMemoryTTF(pointer, fontBytes.Length, 20, &config);
 				io.NativePtr->FontDefault = terrariaFont.NativePtr;
-			}
+            }
 			Renderer.RebuildFontAtlas();
 
 			pinnedArray.Free();
