@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
+using tModPorter;
 
 namespace ImGuiMod;
 
@@ -23,7 +24,7 @@ public class InputHelper : ILoadable
 	{
 		orig(self);
 
-		if (!ImGUIMod.Visible || ImGUIMod.Config == null || !ImGUIMod.Config.PreventInteraction) return;
+		if (ImGUIMod.Config == null || !ImGUIMod.Config.PreventInteraction) return;
 
 		if (Text)
 		{
@@ -33,10 +34,9 @@ public class InputHelper : ILoadable
 
 	void Updateinput(Terraria.GameInput.On_PlayerInput.orig_UpdateInput orig)
 	{
+        if (ImGUIMod.Config == null) return;
 
-        if (!ImGUIMod.Visible || ImGUIMod.Config == null) return;
-
-		if (ImGuiHasHover && ImGUIMod.Config.PreventInteraction)
+		if (ImGUIMod.Config.PreventInteraction && ImGuiHasHover)
 		{
 			Main.mouseLeft =
 			Main.mouseRight =
@@ -55,13 +55,13 @@ public class InputHelper : ILoadable
 				Main.mouseRightRelease = true;
 				PlayerInput.Triggers.Current.MouseRight = false;
 			}
-
-		}
+        }
 		else
 		{
             orig();
         }
-	}
+
+    }
 
 	public void Unload()
 	{

@@ -32,15 +32,7 @@ public class ImGUIMod : Mod
 	static bool _Imguiloaded;
 
 	// config
-	internal static ModKeybind ToggleImGui;
-	internal static ModKeybind DebugKey;
 	internal static ImGUIConfig Config;
-
-	// state
-	/// <summary>
-	/// Get of currently ImGUI is visible
-	/// </summary>
-	public static bool Visible { get; internal set; } = true;
 
 	// native lib
 	static IntPtr _NativeLib;
@@ -57,8 +49,6 @@ public class ImGUIMod : Mod
 		if (!CanGui) return;
 		// configs
 		Config = ModContent.GetInstance<ImGUIConfig>();
-		DebugKey = KeybindLoader.RegisterKeybind(this, "Debug Window", Keys.F6);
-		ToggleImGui = KeybindLoader.RegisterKeybind(this, "Toggle ImGui", Keys.F5);
 		
 		ConfigureNative();
 
@@ -113,14 +103,40 @@ public class ImGUIMod : Mod
 
 		// Call AfterLayout now to finish up and draw all the things
 		Renderer.AfterLayout();
-		if (!Config.TerrariaMouse)
-			return;
 
-		//PlayerInput.SetZoom_Unscaled();
-		PlayerInput.SetZoom_UI();
-		Main.spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Main.UIScaleMatrix);
-		Main.DrawCursor(Main.DrawThickCursor());
-		Main.spriteBatch.End();
+		// TODO - rewrite this
+
+		if (Config.TerrariaMouse && InputHelper.ImGuiHasHover)
+        {
+            PlayerInput.SetZoom_Unscaled();
+            PlayerInput.SetZoom_UI();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Main.UIScaleMatrix);
+
+
+			if (ImGUIMod.Config.PreventInteraction)
+			{
+                Vector2 mousePos = ImGui.GetMousePos();
+                Vector2 cachedMousePos = new Vector2(Main.mouseX, Main.mouseY);
+
+                Main.mouseX = (int)MathF.Round(mousePos.X);
+                Main.mouseY = (int)MathF.Round(mousePos.Y);
+
+                Main.DrawCursor(Main.DrawThickCursor());
+
+                Main.mouseX = (int)MathF.Round(cachedMousePos.X);
+                Main.mouseY = (int)MathF.Round(cachedMousePos.Y);
+
+                Main.spriteBatch.End();
+            }
+			else
+			{
+                Main.DrawCursor(Main.DrawThickCursor());
+            }
+        }
+		else if (!Config.TerrariaMouse)
+		{
+            Main.instance.IsMouseVisible = InputHelper.ImGuiHasHover;
+        }
 	}
 
 	/// <inheritdoc/>
@@ -148,10 +164,6 @@ public class ImGUIMod : Mod
 
         ImGuiIOPtr io = ImGui.GetIO();
 		InputHelper.Text = ImGui.IsAnyItemFocused() || io.WantTextInput;
-
-		if (!Config.TerrariaMouse)
-			// show the mouse if is over a window
-			Main.instance.IsMouseVisible = InputHelper.ImGuiHasHover;
 	}
 
 	private static unsafe void Image(IntPtr ptr, Vector2 size, Vector2 uv0, Vector2 uv1)
@@ -255,8 +267,6 @@ public class ImGUIMod : Mod
 		// reverts
 		ImGuiIlEdit.Revert();
 		_Imguiloaded = false;
-		DebugKey = null;
-		Config = null;
 
 		// destroy renderer sources and Free native lib
 		Renderer.Unload();
