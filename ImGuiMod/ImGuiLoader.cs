@@ -110,10 +110,12 @@ public static class ImGuiLoader
 	{
 		foreach (int gui in HookCustomGUI.arr)
 		{
-			if (ImGUIMod.Visible || guis[gui].AlwaysVisible)
+			// TODO - we need to work out if we want the developer to handle these checks themselves.
+
+			//if (ImGUIMod.Visible || guis[gui].AlwaysVisible)
 			{
-				if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
-				if (InputHelper.PauseMenu && !guis[gui].RenderInPause) continue;
+				//if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
+				//if (InputHelper.PauseMenu && !guis[gui].RenderInPause) continue;
 				ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 				guis[gui].CustomGUI();
 				ImGuiIlEdit.CurrentModGui = null;
@@ -125,7 +127,8 @@ public static class ImGuiLoader
 	{
 		foreach (HookList hook in hooks)
 		{
-            hook.arr = guis.WhereMethodIsOverridden(g => g.SetStaticDefaults).Select(p => (int)p.Index).ToArray();
+			IEnumerable<ModImGui> overridenGuids = guis.WhereMethodIsOverridden(g => g.CustomGUI);
+            hook.arr = overridenGuids.Select(p => (int)p.Index).ToArray();
 		}
 	}
 
