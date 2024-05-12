@@ -91,9 +91,6 @@ public class ImGUIMod : Mod
 			LoadContent();
 
 			check.Set();
-
-            // initial style, can be moved?
-            SetWindowStyle(Config.Style);
 		});
 		check.WaitOne();
 		check.Close();

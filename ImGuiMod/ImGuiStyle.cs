@@ -1,6 +1,6 @@
 ﻿namespace ImGuiMod;
 
-internal enum ImGuiStyle
+public enum ImGuiStyle
 {
 	Terraria,
 	Classic,

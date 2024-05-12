@@ -11,12 +11,14 @@ namespace ImGuiExample
 {
 	public class ImGuiExample : Mod
 	{
-        ImGuiImpl impl = new ImGuiImpl();
+
     }
 
     [ExtendsFromMod("ImGuiMod")]
-    class ImGuiImpl : ImGuiInterface
+    class ImGuiImpl01 : ImGuiInterface
 	{
+        public override ImGuiMod.ImGuiStyle Style => base.Style;
+
         public override void StandardDraw()
         {
             ImGui.Begin("Hello World!");
@@ -37,6 +39,32 @@ namespace ImGuiExample
         {
             ImGui.Begin("Foreground");
             ImGui.Text("This is a foreground window.");
+            ImGui.End();
+        }
+    }
+
+    [ExtendsFromMod("ImGuiMod")]
+    class ImGuiImpl02 : ImGuiInterface
+    {
+        public override ImGuiMod.ImGuiStyle Style => ImGuiMod.ImGuiStyle.Dark;
+
+        public override void StandardDraw()
+        {
+            ImGui.Begin("D:");
+            ImGui.Text("Traditional style");
+            ImGui.End();
+        }
+    }
+
+    [ExtendsFromMod("ImGuiMod")]
+    class ImGuiImpl03 : ImGuiInterface
+    {
+        public override ImGuiMod.ImGuiStyle Style => ImGuiMod.ImGuiStyle.Light;
+
+        public override void StandardDraw()
+        {
+            ImGui.Begin("OW!!!");
+            ImGui.Text("My eyes!!!!");
             ImGui.End();
         }
     }

@@ -42,7 +42,8 @@ public static class ImGuiLoader
 		foreach (int gui in HookForegroundDraw.arr)
 		{
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
-			guis[gui].ForegroundDraw(drawList);
+            ImGUIMod.SetWindowStyle(guis[gui].Style);
+            guis[gui].ForegroundDraw(drawList);
 			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
@@ -57,7 +58,8 @@ public static class ImGuiLoader
 		foreach (int gui in HookBackgroundDraw.arr)
 		{
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
-			guis[gui].BackgroundDraw(drawList);
+            ImGUIMod.SetWindowStyle(guis[gui].Style);
+            guis[gui].BackgroundDraw(drawList);
 			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
@@ -72,7 +74,8 @@ public static class ImGuiLoader
 		foreach (int gui in HookStandardDraw.arr)
 		{
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
-			guis[gui].StandardDraw();
+			ImGUIMod.SetWindowStyle(guis[gui].Style);
+            guis[gui].StandardDraw();
 			ImGuiIlEdit.CurrentModGui = null;
 		}
 	}
