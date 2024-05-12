@@ -47,43 +47,27 @@ public abstract class ModImGui : ModType
 		SetStaticDefaults();
 	}
 
-	/// <summary>
-	/// Use ImGui.** statements that you want to render in the Debug window.
-	/// </summary>
-	public virtual void DebugGUI()
-	{
+    /// <summary>
+    /// Used to draw standard ImGui elements. Most of your UI logic should go here.
+    /// </summary>
+    public virtual void StandardDraw()
+    {
 
-	}
+    }
 
-	/// <summary>
-	/// Create own separate windows. Don't leave ImGui.** instructions on the air, make sure to create a window.
-	/// </summary>
-	public virtual void CustomGUI()
-	{
+    /// <summary>
+    /// Used to draw elements behind all ImGUI windows but above Terraria, useful for primitives like hitboxes.
+    /// </summary>
+    public virtual void BackgroundDraw(ImDrawListPtr drawList)
+    {
 
-	}
+    }
 
-	/// <summary>
-	/// same as CustomGUI but things are not hidden by hiding ImGUI
-	/// </summary>
-	public virtual void OverlayGUI()
-	{
-		
-	}
+    /// <summary>
+    /// Used to draw elements in front of all standard ImGui elements
+    /// </summary>
+    public virtual void ForegroundDraw(ImDrawListPtr drawList)
+    {
 
-	/// <summary>
-	/// Use it to draw things behind all ImGUI windows but above terraria, useful for primitives like hitboxes.
-	/// </summary>
-	public virtual void BackgroundDraw(ImDrawListPtr drawList)
-	{
-
-	}
-
-	/// <summary>
-	/// Use it to draw things on top of ImGUI windows.
-	/// </summary>
-	public virtual void ForeroundDraw(ImDrawListPtr drawList)
-	{
-
-	}
+    }
 }

@@ -144,13 +144,9 @@ public class ImGUIMod : Mod
 		CreateMainDockableArea();
 
 		// draw custom windows
-		ImGuiLoader.CustomGUI();
-		
-		// draw always visible windows
-		ImGuiLoader.OverlayGUI();
+		ImGuiLoader.StandardDraw();
 
-		ImGui.ShowDemoWindow();
-
+		//  TODO - Per window hover logic
         InputHelper.ImGuiHasHover = ImGui.IsAnyItemHovered() || ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow | ImGuiHoveredFlags.RootAndChildWindows | ImGuiHoveredFlags.AllowWhenBlockedByActiveItem | ImGuiHoveredFlags.AllowWhenBlockedByPopup);
 
         ImGuiIOPtr io = ImGui.GetIO();
