@@ -2,7 +2,7 @@
 using System.Text;
 using System;
 
-namespace ImGUI.Internals;
+namespace ImGuiMod.Internals;
 
 public class Util
 {

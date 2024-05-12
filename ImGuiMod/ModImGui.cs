@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
 using Terraria.ModLoader;
 
-namespace ImGUI;
+namespace ImGuiMod;
 
 /// <summary>
 /// Base class to put ImGui.** calls
@@ -38,7 +38,7 @@ public abstract class ModImGui : ModType
 	/// <inheritdoc/>
 	public sealed override bool IsLoadingEnabled(Mod mod)
 	{
-		return ImGUI.CanGui;
+		return ImGUIMod.CanGui;
 	}
 
 	/// <inheritdoc/>

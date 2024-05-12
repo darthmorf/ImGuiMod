@@ -2,7 +2,7 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace ImGUI.extras;
+namespace ImGuiMod.extras;
 
 internal class GamePauseFix : ILoadable
 {

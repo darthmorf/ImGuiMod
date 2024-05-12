@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 
-namespace ImGUI;
+namespace ImGuiMod;
 
 public class InputHelper : ILoadable
 {
@@ -14,7 +14,7 @@ public class InputHelper : ILoadable
 
 	public void Load(Mod mod)
 	{
-		if (!ImGUI.CanGui) return;
+		if (!ImGUIMod.CanGui) return;
 		Terraria.GameInput.On_PlayerInput.UpdateInput += Updateinput;
 		Terraria.On_Main.DoUpdate_HandleInput += DoUpdate_HandleInput;
 	}
@@ -23,7 +23,7 @@ public class InputHelper : ILoadable
 	{
 		orig(self);
 
-		if (!ImGUI.Visible || ImGUI.Config == null || !ImGUI.Config.PreventInteraction) return;
+		if (!ImGUIMod.Visible || ImGUIMod.Config == null || !ImGUIMod.Config.PreventInteraction) return;
 
 		if (Text)
 		{
@@ -34,9 +34,9 @@ public class InputHelper : ILoadable
 	void Updateinput(Terraria.GameInput.On_PlayerInput.orig_UpdateInput orig)
 	{
 
-        if (!ImGUI.Visible || ImGUI.Config == null) return;
+        if (!ImGUIMod.Visible || ImGUIMod.Config == null) return;
 
-		if (ImGuiHasHover && ImGUI.Config.PreventInteraction)
+		if (ImGuiHasHover && ImGUIMod.Config.PreventInteraction)
 		{
 			Main.mouseLeft =
 			Main.mouseRight =
@@ -65,7 +65,7 @@ public class InputHelper : ILoadable
 
 	public void Unload()
 	{
-		if (!ImGUI.CanGui) return;
+		if (!ImGUIMod.CanGui) return;
         Terraria.GameInput.On_PlayerInput.UpdateInput -= Updateinput;
 		Terraria.On_Main.DoUpdate_HandleInput -= DoUpdate_HandleInput;
 

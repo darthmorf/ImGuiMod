@@ -6,7 +6,7 @@ using System.Reflection;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Core;
 
-namespace ImGUI.Internals;
+namespace ImGuiMod.Internals;
 
 internal class ImGuiIlEdit
 {

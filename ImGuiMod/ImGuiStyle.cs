@@ -1,4 +1,4 @@
-﻿namespace ImGUI;
+﻿namespace ImGuiMod;
 
 internal enum ImGuiStyle
 {

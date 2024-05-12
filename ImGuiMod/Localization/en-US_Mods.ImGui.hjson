@@ -46,3 +46,54 @@ Keybinds: {
 	"Debug Window.DisplayName": Toggle Debug Window
 	"Toggle ImGui.DisplayName": Toggle ImGui
 }
+
+od: {
+	Keybinds: {
+		"Debug Window.DisplayName": Debug  Window
+		"Toggle ImGui.DisplayName": Toggle  Im Gui
+	}
+
+	Configs: {
+		ImGUIConfig: {
+			DisplayName: Im G U I Config
+
+			Headers: {
+				DebugWindow.Header: Debug Window. Header Header
+				MetricsWindow.Header: Metrics Window. Header Header
+			}
+
+			DebugWindow: {
+				Label: Debug Window
+				Tooltip: ""
+			}
+
+			TerrariaMouse: {
+				Label: Terraria Mouse
+				Tooltip: ""
+			}
+
+			PreventInteraction: {
+				Label: Prevent Interaction
+				Tooltip: ""
+			}
+
+			Style: {
+				Label: Style
+				Tooltip: ""
+			}
+
+			ShowMetricsWindow: {
+				Label: Show Metrics Window
+				Tooltip: ""
+			}
+		}
+
+		ImGuiStyle: {
+			Tooltip: ""
+			Terraria.Label: Terraria
+			Classic.Label: Classic
+			Dark.Label: Dark
+			Light.Label: Light
+		}
+	}
+}

@@ -2,7 +2,7 @@
 using log4net.Core;
 using log4net.Layout;
 
-namespace ImGUI;
+namespace ImGuiMod;
 
 internal class ImGuiAppender : AppenderSkeleton
 {

@@ -1,4 +1,4 @@
-﻿using ImGUI.Internals;
+﻿using ImGuiMod.Internals;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using Terraria;
 using Terraria.ModLoader.Core;
 // ReSharper disable InconsistentNaming
 
-namespace ImGUI;
+namespace ImGuiMod;
 
 /// <summary>
 /// Hooks for <see cref="ModImGui"/> instances.
@@ -110,7 +110,7 @@ public static class ImGuiLoader
 	{
 		foreach (int gui in HookCustomGUI.arr)
 		{
-			if (ImGUI.Visible || guis[gui].AlwaysVisible)
+			if (ImGUIMod.Visible || guis[gui].AlwaysVisible)
 			{
 				if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
 				if (InputHelper.PauseMenu && !guis[gui].RenderInPause) continue;

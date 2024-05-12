@@ -8,7 +8,7 @@ using ImGuiNET;
 using Terraria.ModLoader;
 using Terraria;
 
-namespace ImGUI.Renderer;
+namespace ImGuiMod.Renderer;
 
 /// <summary>
 /// ImGui renderer for use with XNA-likes (FNA and MonoGame)

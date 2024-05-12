@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace ImGUI.Renderer;
+namespace ImGuiMod.Renderer;
 
 /// <summary>
 /// Only used in renderer

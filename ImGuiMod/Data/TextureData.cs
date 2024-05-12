@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace ImGUI.Data;
+namespace ImGuiMod.Data;
 
 /// <summary>
 /// Saves the pointer and the dimensions of a texture, depending on the type of texture also the frames value is valid

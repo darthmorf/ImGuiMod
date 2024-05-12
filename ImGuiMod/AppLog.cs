@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 
-namespace ImGUI;
+namespace ImGuiMod;
 
 public static class AppLog
 {

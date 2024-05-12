@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Terraria.ModLoader.Config;
 
-namespace ImGUI;
+namespace ImGuiMod;
 
 internal class ImGUIConfig : ModConfig
 {
@@ -26,6 +26,6 @@ internal class ImGUIConfig : ModConfig
 
 	public override void OnChanged()
 	{
-		ImGUI.SetWindowStyle(Style);
+		ImGUIMod.SetWindowStyle(Style);
 	}
 }

@@ -1,4 +1,4 @@
-﻿using ImGUI.Data;
+﻿using ImGuiMod.Data;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 
-namespace ImGUI.Renderer;
+namespace ImGuiMod.Renderer;
 
 /// <summary>
 /// Allow you to get the textures of common Terraria arrays
@@ -75,14 +75,14 @@ public class TextureBinder
 	public void BindTextureData(int type)
 	{
 		if (binds[type].ptr != IntPtr.Zero)
-			ImGUI.Renderer.UnbindTexture(binds[type].ptr);
+			ImGUIMod.Renderer.UnbindTexture(binds[type].ptr);
         Asset<Texture2D> asset = source[type];
 		if (!asset.IsLoaded)
 			Main.Assets.Request<Texture2D>(asset.Name, AssetRequestMode.ImmediateLoad);
         Texture2D texture = asset.Value;
 		binds[type] = new()
 		{
-			ptr = ImGUI.Renderer.BindTexture(texture),
+			ptr = ImGUIMod.Renderer.BindTexture(texture),
 			size = texture.Size(),
 			frames = framecount(type)
 		};

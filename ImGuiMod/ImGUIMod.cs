@@ -1,5 +1,5 @@
-﻿using ImGUI.Internals;
-using ImGUI.Renderer;
+﻿using ImGuiMod.Internals;
+using ImGuiMod.Renderer;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,12 +14,12 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace ImGUI;
+namespace ImGuiMod;
 
 /// <summary>
 /// ImGUI mod, used to access de current ImGuiRenderer.
 /// </summary>
-public class ImGUI : Mod
+public class ImGUIMod : Mod
 {
 
 	/// <summary>
@@ -219,7 +219,7 @@ public class ImGUI : Mod
         byte[] nativeByte = GetFileBytes(Path.Combine("lib", GetNativePath()));
 		File.WriteAllBytes(CimguiPath, nativeByte);
 		NativeLibrary.SetDllImportResolver(typeof(ImGui).Assembly, NativeResolver);
-		NativeLibrary.SetDllImportResolver(typeof(ImGUI).Assembly, NativeResolver);
+		NativeLibrary.SetDllImportResolver(typeof(ImGUIMod).Assembly, NativeResolver);
 	}
 
 	static IntPtr NativeResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
@@ -244,7 +244,7 @@ public class ImGUI : Mod
 		Action a = () => {
 			if(current == null)
 				Main.menuMode = 0;
-            Terraria.On_Main.DoDraw += ImGUI.Main_DoDraw;
+            Terraria.On_Main.DoDraw += ImGUIMod.Main_DoDraw;
 		};
 
 		if (current == null)

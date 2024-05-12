@@ -1,5 +1,5 @@
-﻿using ImGUI.Data;
-using ImGUI.Internals;
+﻿using ImGuiMod.Data;
+using ImGuiMod.Internals;
 using System;
 using System.Text;
 using Microsoft.Xna.Framework;
@@ -52,7 +52,7 @@ public static class ImGuiEx
 
 	public static void ImageFrame(IntPtr texture, float size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
 	{
-		Texture2D tex = ImGUI.ImGUI.Renderer._loadedTextures[texture];
+		Texture2D tex = ImGuiMod.ImGUIMod.Renderer._loadedTextures[texture];
         TextureData data = new TextureData
 		{
 			ptr = texture,
@@ -72,7 +72,7 @@ public static class ImGuiEx
 
 	public static void ImageFrame(IntPtr texture, Vector2 size, int verticalFrames = 1, int horizontalFrames = 1, int frameX = 1, int frameY = 1)
 	{
-        Texture2D tex = ImGUI.ImGUI.Renderer._loadedTextures[texture];
+        Texture2D tex = ImGuiMod.ImGUIMod.Renderer._loadedTextures[texture];
         TextureData data = new TextureData
 		{
 			ptr = texture,

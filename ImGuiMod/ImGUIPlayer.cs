@@ -1,15 +1,15 @@
 ﻿using Terraria.GameInput;
 using Terraria.ModLoader;
 
-namespace ImGUI;
+namespace ImGuiMod;
 
 internal class ImGUIPlayer : ModPlayer
 {
 	public override void ProcessTriggers(TriggersSet triggersSet)
 	{
-		if (ImGUI.DebugKey.JustPressed)
-			ImGUI.Config.DebugWindow = !ImGUI.Config.DebugWindow;
-		if (ImGUI.ToggleImGui.JustPressed)
-			ImGUI.Visible = !ImGUI.Visible;
+		if (ImGUIMod.DebugKey.JustPressed)
+			ImGUIMod.Config.DebugWindow = !ImGUIMod.Config.DebugWindow;
+		if (ImGUIMod.ToggleImGui.JustPressed)
+			ImGUIMod.Visible = !ImGUIMod.Visible;
 	}
 }
