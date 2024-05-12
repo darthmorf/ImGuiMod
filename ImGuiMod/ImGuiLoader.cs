@@ -23,12 +23,13 @@ public static class ImGuiLoader
 	class HookList
 	{
 		public int[] arr = Array.Empty<int>();
-		public readonly MethodInfo method;
+        public LoaderUtils.MethodOverrideQuery<ImGuiInterface> HookOverrideQuery { get; }
+        public MethodInfo method => HookOverrideQuery.Method;
 
-		public HookList(MethodInfo method)
+        public HookList(LoaderUtils.MethodOverrideQuery<ImGuiInterface> hook)
 		{
-			this.method = method;
-		}
+            HookOverrideQuery = hook;
+        }
 	}
 
 	static readonly HookList HookForegroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.ForegroundDraw);
@@ -40,7 +41,6 @@ public static class ImGuiLoader
 	{
 		foreach (int gui in HookForegroundDraw.arr)
 		{
-			if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 			guis[gui].ForegroundDraw(drawList);
 			ImGuiIlEdit.CurrentModGui = null;
@@ -56,7 +56,6 @@ public static class ImGuiLoader
 	{
 		foreach (int gui in HookBackgroundDraw.arr)
 		{
-			if (Main.gameMenu && !guis[gui].RenderInMainMenu) continue;
 			ImGuiIlEdit.CurrentModGui = guis[gui].Mod.Name;
 			guis[gui].BackgroundDraw(drawList);
 			ImGuiIlEdit.CurrentModGui = null;
@@ -82,9 +81,8 @@ public static class ImGuiLoader
 	{
 		foreach (HookList hook in hooks)
 		{
-			// TODO - this line is probably wrong as it only looks at StandardDraw
-			IEnumerable<ModImGui> overridenGuids = guis.WhereMethodIsOverridden(g => g.StandardDraw);
-            hook.arr = overridenGuids.Select(p => (int)p.Index).ToArray();
+			IEnumerable<ImGuiInterface> overridenGuis = guis.Where(hook.HookOverrideQuery.HasOverride);
+            hook.arr = overridenGuis.Select(p => (int)p.Index).ToArray();
 		}
 	}
 
