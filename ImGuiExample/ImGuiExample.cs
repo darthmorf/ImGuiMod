@@ -1,3 +1,5 @@
+using ImGuiMod;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +9,18 @@ using Terraria.ModLoader;
 
 namespace ImGuiExample
 {
-	// Please read https://github.com/tModLoader/tModLoader/wiki/Basic-tModLoader-Modding-Guide#mod-skeleton-contents for more information about the various files in a mod.
 	public class ImGuiExample : Mod
 	{
-
+       ImGuiImpl impl = new ImGuiImpl();
 	}
+
+	class ImGuiImpl : ModImGui
+	{
+        public override void CustomGUI()
+        {
+            ImGui.Begin("Hello World!");
+            ImGui.Text("This is ImGui working from another mod!!");
+            ImGui.End();
+        }
+    }
 }

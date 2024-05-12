@@ -1,3 +1,4 @@
 displayName = ImGui Example
 author = darthmorf
 version = 0.1
+modReferences = ImGuiMod
