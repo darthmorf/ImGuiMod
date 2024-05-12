@@ -12,11 +12,11 @@ using Terraria.ModLoader.Core;
 namespace ImGuiMod;
 
 /// <summary>
-/// Hooks for <see cref="ModImGui"/> instances.
+/// Hooks for <see cref="ImGuiInterface"/> instances.
 /// </summary>
 public static class ImGuiLoader
 {
-	internal static readonly List<ModImGui> guis = new();
+	internal static readonly List<ImGuiInterface> guis = new();
 
 	static readonly List<HookList> hooks = new();
 
@@ -34,7 +34,7 @@ public static class ImGuiLoader
 	static readonly HookList HookForegroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.ForegroundDraw);
 
 	/// <summary>
-	/// Call <see cref="ModImGui.ForegroundDraw(ImDrawListPtr)"/> hook.
+	/// Call <see cref="ImGuiInterface.ForegroundDraw(ImDrawListPtr)"/> hook.
 	/// </summary>
 	public static void ForegroundDraw(ImDrawListPtr drawList)
 	{
@@ -50,7 +50,7 @@ public static class ImGuiLoader
 	static readonly HookList HookBackgroundDraw = AddHook<Action<ImDrawListPtr>>(p => p.BackgroundDraw);
 
 	/// <summary>
-	/// Call <see cref="ModImGui.BackgroundDraw(ImDrawListPtr)"/> hook.
+	/// Call <see cref="ImGuiInterface.BackgroundDraw(ImDrawListPtr)"/> hook.
 	/// </summary>
 	public static void BackgroundDraw(ImDrawListPtr drawList)
 	{
@@ -66,7 +66,7 @@ public static class ImGuiLoader
 	static readonly HookList HookStandardDraw = AddHook<Action>(p => p.StandardDraw);
 
     /// <summary>
-    /// Call <see cref="ModImGui.HookStandardDraw()"/> hook.
+    /// Call <see cref="ImGuiInterface.HookStandardDraw()"/> hook.
     /// </summary>
     public static void StandardDraw()
 	{
@@ -88,9 +88,9 @@ public static class ImGuiLoader
 		}
 	}
 
-	static HookList AddHook<F>(Expression<Func<ModImGui, F>> func) where F : Delegate
+	static HookList AddHook<F>(Expression<Func<ImGuiInterface, F>> func) where F : Delegate
 	{
-        HookList hook = new HookList(func.ToMethodInfo());
+        HookList hook = new HookList(func.ToOverrideQuery());
 
 		hooks.Add(hook);
 

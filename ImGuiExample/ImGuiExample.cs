@@ -14,7 +14,8 @@ namespace ImGuiExample
         ImGuiImpl impl = new ImGuiImpl();
     }
 
-	class ImGuiImpl : ModImGui
+    [ExtendsFromMod("ImGuiMod")]
+    class ImGuiImpl : ImGuiInterface
 	{
         public override void StandardDraw()
         {

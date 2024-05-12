@@ -6,7 +6,7 @@ namespace ImGuiMod;
 /// <summary>
 /// Base class to put ImGui.** calls
 /// </summary>
-public abstract class ModImGui : ModType
+public abstract class ImGuiInterface : ModType
 {
 	/// <summary>
 	/// Indicates that this custom gui should be rendered even when the main imgui is hidden.
@@ -30,7 +30,7 @@ public abstract class ModImGui : ModType
 	/// <inheritdoc/>
 	protected sealed override void Register()
 	{
-		ModTypeLookup<ModImGui>.Register(this);
+		ModTypeLookup<ImGuiInterface>.Register(this);
 		Index = _NextIndex++;
 		ImGuiLoader.guis.Add(this);	
 	}
