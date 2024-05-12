@@ -112,7 +112,7 @@ public class ImGUIMod : Mod
 
 		// draw raws
 		ImGuiLoader.BackgroundDraw(ImGui.GetBackgroundDrawList());
-		ImGuiLoader.ForeroundDraw(ImGui.GetForegroundDrawList());
+		ImGuiLoader.ForegroundDraw(ImGui.GetForegroundDrawList());
 
 		// Call AfterLayout now to finish up and draw all the things
 		Renderer.AfterLayout();
